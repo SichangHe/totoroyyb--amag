@@ -70,16 +70,28 @@ Check if any installed skills apply:
 
 Adopt the category's mindset for the duration of this task. Match existing codebase patterns. Implement exactly what the plan specifies.
 
-#### d) Verify Against Acceptance Criteria
+#### d) Static Analysis — Per Task (MANDATORY, before marking done)
+
+After editing any files for this task, run targeted static analysis on those specific files — do not wait for the final verification wave:
+
+1. **Detect toolchain** from config files: `tsconfig.json` → `tsc --noEmit`, `mypy.ini`/`pyproject.toml` → `mypy <file>`, `Cargo.toml` → `cargo check`, `.eslintrc`/`biome.json` → `eslint <file>`.
+2. **Run targeted check** on only the files you changed in this task. This is fast — not a full project build.
+3. **Zero new errors required** — if errors appear, fix them before proceeding to `e)`.
+
+This is the AMAG equivalent of OMO's `lsp_diagnostics` — run it once per task, not once per plan.
+
+**Anti-pattern**: Do NOT defer this to the final verification wave. By then, errors from earlier tasks compound and are harder to trace.
+
+#### e) Verify Against Acceptance Criteria
 
 Check the plan's acceptance criteria for this task:
-- Run build/test commands
+- Run build/test commands if the plan specifies them for this task
 - Verify with `grep_search` for expected patterns
 - Use `browser_subagent` for visual verification if needed
 
-Mark task as completed only AFTER verification passes.
+Mark task as completed only AFTER both `d)` (static analysis clean) and `e)` (acceptance criteria) pass.
 
-#### e) Dual-Write Progress (MANDATORY after each task)
+#### f) Dual-Write Progress (MANDATORY after each task)
 
 All three updates must happen together:
 
@@ -91,12 +103,16 @@ All three updates must happen together:
 
 ### 4. Accumulate Learnings
 
-After each task, note:
-- Conventions discovered (naming, patterns, style)
-- Gotchas encountered (edge cases, unexpected behavior)
-- Decisions made (trade-offs, alternatives considered)
+After each task, write key findings to `.amag/notepads/{plan-name}.md`. Append — never overwrite.
 
-Apply these learnings to subsequent tasks to maintain consistency.
+```markdown
+## [Task N: title]
+- Convention: [naming pattern, style convention discovered]
+- Gotcha: [edge case, unexpected behavior encountered]
+- Decision: [trade-off made, alternative considered and rejected]
+```
+
+**Before starting each subsequent task**: re-read this file and apply accumulated knowledge. This prevents repeating mistakes and ensures consistency across tasks — the same function OMO's notepad system serves for subagents.
 
 ### 5. Final Verification (NON-NEGOTIABLE — after ALL tasks)
 

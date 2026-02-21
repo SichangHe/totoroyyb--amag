@@ -91,6 +91,7 @@ Load relevant skills when a category matches: `frontend-ui-ux` for visual, `deep
 ```
 Skill: [name]
 Why relevant: [one sentence tied directly to this task]
+Expected outcome: [what success looks like after this skill is applied]
 Omitted skills: [name] — [why it doesn't apply to this task]
 ```
 
@@ -199,6 +200,8 @@ Run the project's **type checker or linter on the files you changed** — not a 
 - Run the fastest targeted check available (e.g., `tsc --noEmit`, `mypy <file>`, `cargo check`, `eslint <file>`).
 - If no type checker exists, run the linter instead.
 - **Goal**: catch type errors and obvious issues in changed files earlier than a full build — faster feedback loop.
+
+**Cadence in `/start-work`**: Run this after EACH task unit completes (step `d)` in the loop), not just once at the end. This mirrors OMO's `lsp_diagnostics` per-delegation pattern — errors caught task-by-task are vastly easier to fix than errors caught after 7 tasks of compounding changes.
 
 **If this step fails: fix the errors before proceeding to Step 3.**
 
