@@ -21,6 +21,14 @@ Read-only, multi-phase codebase understanding workflow. Explore architecture, tr
 - Can the question be answered by reading 1-3 files? → Exploratory (inline search, no workflow)
 - Does understanding require tracing across 3+ modules or building an architectural mental model? → `/explore`
 
+## Progress Tracking
+
+Call `task_boundary` at **every phase transition** with:
+- **TaskName**: `"Exploring: {topic}"`
+- **Mode**: `PLANNING`
+- **TaskStatus**: Use the directive shown at each phase (e.g. `"Phase 2/4: Deep-diving into [module]"`)
+- **TaskSummary**: Cumulative — modules mapped, patterns found, insights so far
+
 ## Interaction Model
 
 **You are a research partner, not a silent worker.**
@@ -32,6 +40,7 @@ Read-only, multi-phase codebase understanding workflow. Explore architecture, tr
 - **Never write code, create implementation plans, or modify the project** — if the user asks for implementation, acknowledge it and suggest they use `/plan` after exploration is complete
 
 ## Phase 1: Scope & Structural Scan
+<!-- task_boundary: TaskStatus="Phase 1/4: Scanning codebase structure" -->
 
 **Goal**: Understand what exists before going deep.
 
@@ -69,6 +78,7 @@ grep_search("import|include|use ", IsRegex=true)      → module boundaries
 **Narrate**: Tell the user what you found — "This codebase has N major subsystems: X, Y, Z. I'll explore [most relevant ones] next."
 
 ## Phase 2: Module-by-Module Deep Dives
+<!-- task_boundary: TaskStatus="Phase 2/4: Deep-diving into modules" -->
 
 **Goal**: Build deep understanding of each significant module/subsystem.
 
@@ -104,6 +114,7 @@ For each relevant module (prioritize based on user's question):
 **Narrate**: After each module, tell the user what you found and what's next.
 
 ## Phase 3: Cross-Cutting Analysis
+<!-- task_boundary: TaskStatus="Phase 3/4: Analyzing cross-module interactions" -->
 
 **Goal**: Understand how modules interact — the architecture, not just the parts.
 
@@ -133,6 +144,7 @@ Load `architecture-advisor` skill mindset (read-only consulting mode):
 ```
 
 ## Phase 4: Synthesis & Presentation
+<!-- task_boundary: TaskStatus="Phase 4/4: Synthesizing findings" -->
 
 **Goal**: Consolidate into a coherent understanding delivered to the user.
 

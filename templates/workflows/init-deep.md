@@ -6,9 +6,18 @@ description: Generate hierarchical GEMINI.md context files across the codebase
 
 Generate hierarchical GEMINI.md documentation files across the entire codebase. These files serve as AI-readable context that helps agents understand each directory's purpose, key files, and working instructions.
 
+## Progress Tracking
+
+Call `task_boundary` at **every step transition** with:
+- **TaskName**: `"Init Deep: {project}"`
+- **Mode**: `EXECUTION`
+- **TaskStatus**: Use the directive shown at each step (e.g. `"Step 3/5: Generating GEMINI.md — Level [N]"`)
+- **TaskSummary**: Cumulative — directories mapped, files generated
+
 ## Steps
 
 ### 1. Map Directory Structure
+<!-- task_boundary: TaskStatus="Step 1/5: Mapping directory structure" -->
 
 ```
 find_by_name with Pattern="*" and Type="directory"
@@ -17,6 +26,7 @@ find_by_name with Pattern="*" and Type="directory"
 Exclude: `node_modules`, `.git`, `dist`, `build`, `__pycache__`, `.venv`, `coverage`, `.next`
 
 ### 2. Plan Generation Order
+<!-- task_boundary: TaskStatus="Step 2/5: Planning generation order" -->
 
 Generate **parent levels before child levels** to ensure references are valid:
 
@@ -27,6 +37,7 @@ Level 2: /src/components, /src/utils
 ```
 
 ### 3. Generate GEMINI.md Per Directory
+<!-- task_boundary: TaskStatus="Step 3/5: Generating GEMINI.md files" -->
 
 For each directory:
 1. Read key files using `view_file_outline` (don't read entire large files)
@@ -62,6 +73,7 @@ For each directory:
 ```
 
 ### 4. Skip Rules
+<!-- task_boundary: TaskStatus="Step 4/5: Applying skip rules" -->
 
 | Condition | Action |
 |-----------|--------|
@@ -71,6 +83,7 @@ For each directory:
 | Has substantive code | Full GEMINI.md |
 
 ### 5. Validate
+<!-- task_boundary: TaskStatus="Step 5/5: Validating generated files" -->
 
 After generation:
 - Verify all GEMINI.md files reference real files

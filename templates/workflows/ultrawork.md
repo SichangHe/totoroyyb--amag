@@ -8,6 +8,16 @@ Activate maximum-effort autonomous execution. You MUST achieve 100% certainty be
 
 **MANDATORY**: Say "ULTRAWORK MODE ACTIVATED" to the user when this mode activates.
 
+## Progress Tracking
+
+Call `task_boundary` at **every major phase** with:
+- **TaskName**: `"Ultrawork: {goal}"`
+- **Mode**: Transition through `PLANNING` → `EXECUTION` → `VERIFICATION`
+- **TaskStatus**: Phase-based updates:
+  - `"Certainty check: exploring codebase"` → `"Certainty check: [N] files read, [status]"`
+  - `"Executing: task [N/total] — {title}"` → `"Verifying: running full verification protocol"`
+- **TaskSummary**: Cumulative — certainty level, tasks done, evidence collected
+
 ## Certainty Protocol (NON-NEGOTIABLE)
 
 **YOU MUST NOT START IMPLEMENTATION UNTIL YOU ARE 100% CERTAIN.**

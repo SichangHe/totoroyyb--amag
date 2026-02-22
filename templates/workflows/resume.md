@@ -6,9 +6,18 @@ description: Resume work from a previous plan — self-validates progress and co
 
 Pick up where you left off. Reads `.amag/active-plan.md`, validates actual progress via checkboxes, and resumes from the first uncompleted task.
 
+## Progress Tracking
+
+Call `task_boundary` at **every step transition** with:
+- **TaskName**: `"Resuming: {plan name}"`
+- **Mode**: `EXECUTION`
+- **TaskStatus**: Use the directive shown at each step (e.g. `"Step 2/4: Validating progress"`)
+- **TaskSummary**: Cumulative — plan state, progress found, context rebuilt
+
 ## Steps
 
 ### 1. Read Active Plan
+<!-- task_boundary: TaskStatus="Step 1/4: Reading active plan" -->
 
 Read `.amag/active-plan.md` in the project root.
 
@@ -16,6 +25,7 @@ Read `.amag/active-plan.md` in the project root.
 - **Found** → proceed to self-validation
 
 ### 2. Self-Validate (Ignore Stale Metadata)
+<!-- task_boundary: TaskStatus="Step 2/4: Validating progress checkboxes" -->
 
 Parse the file content. Count checkboxes:
 
@@ -35,6 +45,7 @@ Calculate: `completed / total`
 - Stop here
 
 ### 3. Rebuild Context
+<!-- task_boundary: TaskStatus="Step 3/4: Rebuilding context from artifacts" -->
 
 1. Read `.amag/active-plan.md` for task list and progress
 2. Search for an `implementation_plan.md` artifact (if in the same conversation that created it)
@@ -43,6 +54,7 @@ Calculate: `completed / total`
 5. Create `task.md` artifact in this conversation, seeded from `active-plan.md` checkboxes
 
 ### 4. Begin Execution
+<!-- task_boundary: TaskStatus="Step 4/4: Beginning execution" -->
 
 1. Set `status: in-progress` and `last_updated` in `.amag/active-plan.md`
 2. Set `task_boundary` with first uncompleted task

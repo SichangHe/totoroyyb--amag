@@ -8,9 +8,18 @@ Read an existing plan and execute it task-by-task with verification. This is the
 
 **You are a conductor, not a player.** For each task, adopt the right persona (category), load relevant skills, verify completion, then move to the next task.
 
+## Progress Tracking
+
+Call `task_boundary` at **every step transition** with:
+- **TaskName**: `"Executing: {plan name}"`
+- **Mode**: `EXECUTION` (switch to `VERIFICATION` at Step 5)
+- **TaskStatus**: Use the directive shown at each step. During Step 3, update per-task: `"Step 3/6: Task [N/total] — {task title}"`
+- **TaskSummary**: Cumulative — tasks completed, issues found, learnings
+
 ## Steps
 
 ### 1. Find and Read the Plan
+<!-- task_boundary: TaskStatus="Step 1/6: Reading plan" -->
 
 **Check both sources and combine:**
 
@@ -32,6 +41,7 @@ Read an existing plan and execute it task-by-task with verification. This is the
 - Tell the user: "No active plan found. Use `/plan` to create one."
 
 ### 2. Create Task Breakdown
+<!-- task_boundary: TaskStatus="Step 2/6: Creating task breakdown" -->
 
 Create a `task.md` artifact with all tasks from the plan. Copy checkbox state from `.amag/active-plan.md` if resuming.
 
@@ -42,6 +52,7 @@ Update `.amag/active-plan.md` YAML header:
 - Set `last_updated` to current timestamp
 
 ### 3. Execute Task-by-Task
+<!-- task_boundary: TaskStatus="Step 3/6: Task [N/total] — {task title}" -->
 
 For each uncompleted task:
 
@@ -102,6 +113,7 @@ All three updates must happen together:
 **Never update one without the others.**
 
 ### 4. Accumulate Learnings
+<!-- task_boundary: TaskStatus="Step 4/6: Recording learnings" -->
 
 After each task, write key findings to `.amag/notepads/{plan-name}.md`. Append — never overwrite.
 
@@ -115,6 +127,7 @@ After each task, write key findings to `.amag/notepads/{plan-name}.md`. Append �
 **Before starting each subsequent task**: re-read this file and apply accumulated knowledge. This prevents repeating mistakes and ensures consistency across tasks — the same function OMO's notepad system serves for subagents.
 
 ### 5. Final Verification (NON-NEGOTIABLE — after ALL tasks)
+<!-- task_boundary: Mode=VERIFICATION, TaskStatus="Step 5/6: Running final verification" -->
 
 This is not a formality. This is where you catch everything the per-task checks missed.
 
@@ -162,6 +175,7 @@ If a build or test command hangs during this phase, follow the Long-Running Comm
 5. **Do NOT mark the plan complete** while any task remains unverified due to a hang.
 
 ### 6. Mark Plan Complete
+<!-- task_boundary: TaskStatus="Step 6/6: Marking plan complete" -->
 
 1. Update `.amag/active-plan.md` YAML header: `status: completed`, `last_updated`
 2. Create `walkthrough.md` artifact summarizing what was implemented and verified

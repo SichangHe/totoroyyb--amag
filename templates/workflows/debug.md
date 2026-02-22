@@ -12,6 +12,14 @@ Engage systematic debugging mode. No guessing. No shotgun fixes. Trace the root 
 
 Load `deep-work` skill for exploration methodology (parallel searches, trace call chains, read 5-10 files minimum). The phase structure below takes precedence over deep-work's goal-driven autonomy.
 
+## Progress Tracking
+
+Call `task_boundary` at **every phase transition** with:
+- **TaskName**: `"Debugging: {symptom}"`
+- **Mode**: `EXECUTION`
+- **TaskStatus**: Use the directive shown at each phase (e.g. `"Phase 2/5: Tracing root cause"`)
+- **TaskSummary**: Cumulative — hypotheses formed/eliminated, evidence found
+
 ## How This Gets Engaged
 
 | Trigger | Entry Point |
@@ -21,6 +29,7 @@ Load `deep-work` skill for exploration methodology (parallel searches, trace cal
 | Transparent upgrade — inline fix failed, revealed deeper issue | Phase 1 (carry the failed attempt as eliminated hypothesis) |
 
 ## Phase 0 — Triage
+<!-- task_boundary: TaskStatus="Phase 1/5: Triaging bug type" -->
 
 Classify the bug type. This determines your investigation strategy.
 
@@ -35,6 +44,7 @@ Classify the bug type. This determines your investigation strategy.
 **Output**: State the bug type and your investigation strategy before proceeding.
 
 ## Phase 1 — Reproduce (NEVER SKIP)
+<!-- task_boundary: TaskStatus="Phase 2/5: Reproducing the bug" -->
 
 **If you can't reproduce it, you can't verify a fix.**
 
@@ -49,6 +59,7 @@ Classify the bug type. This determines your investigation strategy.
 **Output**: A failing test or documented repro steps that reliably triggers the bug.
 
 ## Phase 2 — Root Cause Investigation
+<!-- task_boundary: TaskStatus="Phase 3/5: Investigating root cause" -->
 
 This is where you use `deep-work` exploration methodology. Fire parallel searches, trace call chains, read broadly.
 
@@ -89,6 +100,7 @@ For each hypothesis:
 **Output**: The confirmed root cause with evidence. You must be able to explain WHY the bug exists, not just WHERE.
 
 ## Phase 3 — Pattern Analysis
+<!-- task_boundary: TaskStatus="Phase 3/5: Analyzing patterns against working code" -->
 
 Before fixing, verify your understanding by comparing against working code:
 
@@ -101,6 +113,7 @@ This step catches cases where the "root cause" is actually a symptom of a wrong 
 **Output**: Confirmation that pattern analysis supports the root cause, OR a revised hypothesis.
 
 ## Phase 4 — Fix (Minimal & Surgical)
+<!-- task_boundary: TaskStatus="Phase 4/5: Applying surgical fix" -->
 
 1. **Implement a single fix** that addresses the root cause — not the symptom
 2. **Change ONE thing** — if your fix touches many files, question whether you're fixing the root cause or patching symptoms
@@ -117,6 +130,7 @@ This step catches cases where the "root cause" is actually a symptom of a wrong 
 - You can't explain WHY the fix works
 
 ## Phase 5 — Verification & Hardening
+<!-- task_boundary: TaskStatus="Phase 5/5: Verifying fix and checking for systemic risk" -->
 
 ### Verify the Fix
 

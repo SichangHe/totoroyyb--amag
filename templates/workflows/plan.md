@@ -15,9 +15,18 @@ Classify complexity → explore codebase → detect tests → interview → clea
 > [!TIP]
 > **Explore handoff**: If a `research-findings.md` artifact exists (from a prior `/explore`), read it as pre-existing context. Skip redundant exploration.
 
+## Progress Tracking
+
+Call `task_boundary` at **every step transition** with:
+- **TaskName**: `"Planning: {feature}"`
+- **Mode**: `PLANNING`
+- **TaskStatus**: Use the directive shown at each step (e.g. `"Step 2/10: Exploring codebase"`)
+- **TaskSummary**: Cumulative — what has been decided/discovered so far
+
 ---
 
 ## Step 0: Complexity Assessment
+<!-- task_boundary: TaskStatus="Step 1/10: Assessing complexity" -->
 
 | Level | Signal | Action |
 |---|---|---|
@@ -30,6 +39,7 @@ State: *"This is [trivial/simple/complex] because [reason]."*
 ---
 
 ## Step 1: Intent Classification + Research
+<!-- task_boundary: TaskStatus="Step 2/10: Classifying intent and exploring codebase" -->
 
 **Never ask the user about things you can look up.** Load `codebase-explorer` skill.
 
@@ -49,6 +59,7 @@ Launch **parallel searches** based on type:
 ---
 
 ## Step 2: Test Infrastructure Detection
+<!-- task_boundary: TaskStatus="Step 3/10: Detecting test infrastructure" -->
 
 **MANDATORY for Build from Scratch and Refactoring intents — before interviewing.**
 
@@ -63,16 +74,12 @@ Record the decision — it affects the entire plan structure.
 ---
 
 ## Step 3: Interview (ONE question at a time)
+<!-- task_boundary: TaskStatus="Step 4/10: Interviewing — [N] requirements confirmed" -->
 
 Ask via `notify_user`. One question per turn — each answer informs the next.
 
 > [!TIP]
 > **Formatting**: Each option as a separate list item (`-`), blank line between options, bold label + description after colon.
-
-**Progress tracking** via `task_boundary`:
-- After complexity: `"Planning: classified as [level] — starting interview"`
-- After each answer: `"Planning: [N] requirements confirmed — [next topic]"`
-- After clearance: `"Planning: requirements clear — generating plan"`
 
 **`notify_user` strategy**: Trivial/Simple → `ShouldAutoProceed: true`. Complex → `ShouldAutoProceed: false`.
 
@@ -84,6 +91,7 @@ Ask via `notify_user`. One question per turn — each answer informs the next.
 ---
 
 ## Step 4: Self-Clearance Check
+<!-- task_boundary: TaskStatus="Step 5/10: Running self-clearance check" -->
 
 **Run after EVERY interview turn:**
 
@@ -102,6 +110,7 @@ Ask via `notify_user`. One question per turn — each answer informs the next.
 ---
 
 ## Step 5: AI-Slop Prevention
+<!-- task_boundary: TaskStatus="Step 6/10: AI-slop prevention scan" -->
 
 Quick scan before generating — cut scope inflation, premature abstraction, over-validation, documentation bloat, and feature creep. Only include what was explicitly requested.
 
@@ -109,13 +118,14 @@ Quick scan before generating — cut scope inflation, premature abstraction, ove
 
 > [!CAUTION]
 > ## Step 6: Pre-Generation Gap Review — HARD STOP
+> <!-- task_boundary: TaskStatus="Step 7/10: Running plan consultant (gap review)" -->
 >
 > **MANDATORY. NON-NEGOTIABLE. You MUST execute this step IN FULL before Step 7.**
 > If you skip this step, the plan is INVALID. There are NO exceptions.
 > Do NOT jump ahead to plan generation. Do NOT reason that "the interview was thorough enough."
 > The consultant review exists precisely because self-assessed thoroughness is unreliable.
 
-Load `plan-consultant` skill **NOW**. Read its SKILL.md and follow every step. The skill handles: backend detection (CLI vs self-review), gap analysis through six categories, and writing review files to `.amag/reviews/`.
+Load `plan-consultant` skill **NOW**. Read its SKILL.md and follow every step. The skill handles: gap analysis through six categories, writing review files to `.amag/reviews/`, and CLI delegation (via `external-cli-runner` skill) with automatic fallback to self-review.
 
 ### Mandatory Completion Gate
 
@@ -153,6 +163,7 @@ If no verdict → re-run or fall back to self-review.
 ---
 
 ## Step 7: Generate Plan
+<!-- task_boundary: TaskStatus="Step 8/10: Generating implementation plan" -->
 
 > [!WARNING]
 > **Pre-generation check**: Have you completed Step 6? If `.amag/reviews/{planId}-consultant-response.md` does not exist, STOP and go back to Step 6. Do not generate the plan without consultant review.
@@ -207,6 +218,7 @@ grep_search("## Final Verification Wave", implementation_plan.md)
 ---
 
 ## Step 8: High-Accuracy Gate
+<!-- task_boundary: TaskStatus="Step 9/10: Presenting plan for review" -->
 
 **MANDATORY prompt.** Always present this choice to the user via `notify_user`. Do NOT skip this step or auto-select an option.
 
@@ -221,6 +233,7 @@ grep_search("## Final Verification Wave", implementation_plan.md)
 ---
 
 ## Step 9: Wait for Approval
+<!-- task_boundary: TaskStatus="Step 9/10: Waiting for user approval" -->
 
 Present plan via `notify_user` with `BlockedOnUser: true` and `ShouldAutoProceed: false`.
 
@@ -229,6 +242,7 @@ Present plan via `notify_user` with `BlockedOnUser: true` and `ShouldAutoProceed
 ---
 
 ## Step 10: Persist Plan (After Approval ONLY)
+<!-- task_boundary: TaskStatus="Step 10/10: Persisting approved plan" -->
 
 1. **Check for existing plan**: Read `.amag/active-plan.md`
    - If exists with unchecked tasks → ask user: Archive and start new, or Resume?
