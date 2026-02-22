@@ -106,7 +106,7 @@ When decomposing work into sub-tasks (especially in `/start-work`), classify eac
 
 **Category tiebreaker**: When a task spans multiple categories, apply the **primary** category's mindset and load skills from **all** matching categories. Primary = the category that describes the *hardest* part of the task.
 
-Load relevant skills when a category matches: `frontend-ui-ux` for visual, `deep-work` for deep, `writing` for writing, `git-master` for git operations.
+Load relevant skills when a category matches: `frontend-ui-ux` for visual, `deep-work` for deep, `writing` for writing, `git-master` for git operations. Note: `architecture-advisor` is not category-mapped — it's loaded on-demand for architecture decisions and debugging escalation (see Tool Selection Guide).
 
 ### Skill Loading Protocol
 

@@ -17,6 +17,8 @@ Anti-AI-slop writing persona. When activated, produce clear, human-sounding pros
 
 ## Anti-AI-Slop Rules (NON-NEGOTIABLE)
 
+> These rules apply to **user-facing prose output**: documentation, READMEs, commit messages, comments, error messages. They do not apply to the protocol's own internal markdown syntax or to code.
+
 ### Forbidden Patterns
 
 | Pattern | Fix |

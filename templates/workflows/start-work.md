@@ -59,7 +59,7 @@ Before executing, classify what kind of work this task requires:
 
 #### b) Load Relevant Skills
 
-Check if any installed skills apply:
+Check if any installed skills apply (workflow-defined loading — see GEMINI.md Skill Loading Protocol):
 - Frontend/UI work → activate `frontend-ui-ux` skill
 - Git operations → activate `git-master` skill
 - Browser testing needed → activate `browser-testing` skill

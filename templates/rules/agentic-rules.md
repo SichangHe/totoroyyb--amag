@@ -6,7 +6,7 @@
 
 ## On Session Start
 
-Check `.amag/active-plan.md` in the project root for pending work:
+Check `.amag/active-plan.md` in the project root for pending work. **Self-validate** the file: parse all checkboxes, compare against status metadata, fix inconsistencies (see GEMINI.md Self-validation rule).
 - If found with unchecked tasks → inform user: "Found active plan [name] (X/Y tasks done). Use `/resume` to continue or `/plan` for new work."
 - If found with all tasks checked → no action needed (plan is complete)
 - If not found → no action needed (no active plan)

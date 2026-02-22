@@ -35,7 +35,7 @@ Read-only, multi-phase codebase understanding workflow. Explore architecture, tr
 
 **Goal**: Understand what exists before going deep.
 
-**If `/init-deep` has been run** (GEMINI.md files exist in the target codebase):
+**If `/init-deep` has been run** (check: `find_by_name("GEMINI.md", MaxDepth=3)` returns results in the target codebase):
 - Read the relevant GEMINI.md files first — they contain AI-readable summaries
 - Skip redundant structural scanning; focus on what GEMINI.md doesn't cover
 

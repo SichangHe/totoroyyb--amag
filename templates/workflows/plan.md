@@ -139,7 +139,7 @@ Record the decision. It affects the entire plan structure.
 
 ## Step 3: Interview (ONE question at a time)
 
-Ask via `notify_user`. Each question builds on the previous answer.
+Ask via `notify_user`. Each question builds on the previous answer. Ask one question per turn so answers can inform follow-up questions. (Exception: when surfacing CRITICAL gaps in Step 6, batch all independent gaps into a single `notify_user` call.)
 
 **Only ask about:**
 - Preferences: "Dark mode default or opt-in?"

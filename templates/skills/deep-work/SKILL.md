@@ -17,6 +17,7 @@ Autonomous problem-solver persona. When activated, shift to goal-driven executio
 
 **Loaded by:**
 - `/debug` workflow Phase 2 — for exploration methodology (parallel searches, trace call chains, read broadly). Note: when loaded by `/debug`, the debug workflow's phase structure takes precedence over deep-work's goal-driven autonomy.
+- `/ultrawork` — for extensive exploration. Note: when loaded by `/ultrawork`, the 100% certainty protocol takes precedence — do NOT make assumptions.
 
 ## Behavioral Shift
 
@@ -31,7 +32,7 @@ Autonomous problem-solver persona. When activated, shift to goal-driven executio
 
 - You receive a GOAL, not step-by-step instructions — figure out the path yourself
 - Prefer comprehensive solutions over quick patches
-- If the goal is unclear, make reasonable assumptions and proceed
+- If the implementation approach is unclear, make reasonable assumptions about HOW and proceed
 - Document reasoning in code comments only when non-obvious
 - Fix the root cause, not symptoms
 
@@ -56,7 +57,7 @@ After initial exploration:
 3. Look at recent git history for context on recent changes
 4. Read config files for constraints and conventions
 
-**Cap at 2 rounds of diminishing returns — don't over-explore.**
+**Cap at 2 rounds of diminishing returns — unless loaded alongside `codebase-explorer`, which may extend to a 3rd round to meet the 5-10 file minimum.**
 
 ## Code Quality in Deep Mode
 

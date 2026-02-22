@@ -76,3 +76,15 @@ After generation:
 - Verify all GEMINI.md files reference real files
 - Ensure no orphaned GEMINI.md for deleted directories
 - Check that descriptions are specific, not generic boilerplate
+
+## When to Use
+
+- User says "init-deep", "generate context files", or uses `/init-deep`
+- First encounter with a large codebase — generating persistent AI-readable context
+- After significant structural changes to the codebase (new modules, directory restructuring)
+
+## When NOT to Use
+
+- Codebase already has GEMINI.md files and hasn't changed structurally
+- Quick exploration of a codebase (use `/explore` instead — read-only, no file generation)
+- Understanding a single module (use Exploratory inline search)
