@@ -110,14 +110,15 @@ Set `WaitMsBeforeAsync: 500` to run async. Poll via `command_status` at 30s inte
 
 **Timeout strategy for external CLI agents:**
 
-1. **Record the start time** when the command is dispatched.
-2. **Poll at 30s intervals** via `command_status(WaitDurationSeconds: 30)`.
-3. **On each poll**, check:
+1. **Read the timeout** from config: parse `configPath` to get the parent section (e.g. `debug` from `debug.consultant`), then read `{parent}.timeout_ms` from `.amag/config.json`. Convert to minutes. If not set, default to **10 minutes**.
+2. **Record the start time** when the command is dispatched.
+3. **Poll at 30s intervals** via `command_status(WaitDurationSeconds: 30)`.
+4. **On each poll**, check:
    - If the command has **completed** (status = done) → proceed to Step 3 (Error Detection).
    - If the command is **still running**, check elapsed wall-clock time:
-     - **Under 10 minutes**: keep polling. Silence is expected.
-     - **Over 10 minutes**: `send_command_input(Terminate=true)` → count as a failed attempt.
-4. **If output appears at any point** (even partial), reset the timeout clock — the agent is actively producing.
+     - **Under the configured timeout**: keep polling. Silence is expected.
+     - **Over the configured timeout**: `send_command_input(Terminate=true)` → count as a failed attempt.
+5. **If output appears at any point** (even partial), reset the timeout clock — the agent is actively producing.
 
 ---
 

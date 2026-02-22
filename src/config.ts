@@ -4,24 +4,25 @@ import { resolveProjectDir, log } from "./utils.js";
 
 // --- Types ---
 
-export type ReviewCLI = "codex" | "claude" | "gemini-cli";
+export type ExternalCLI = "codex" | "claude" | "gemini-cli";
 
 export type ThinkingLevel = "max" | "high" | "medium" | "low" | "none";
 
-export interface ReviewRoleConfig {
-    cli: ReviewCLI | null;
+export interface ExternalAgentConfig {
+    cli: ExternalCLI | null;
     model: string | null;
     thinking: ThinkingLevel;
 }
 
 export interface ReviewConfig {
-    consultant: ReviewRoleConfig;
-    critic: ReviewRoleConfig;
+    consultant: ExternalAgentConfig;
+    critic: ExternalAgentConfig;
     timeout_ms: number;
 }
 
 export interface DebugConfig {
-    consultant: ReviewRoleConfig;
+    consultant: ExternalAgentConfig;
+    timeout_ms: number;
 }
 
 export interface AmagConfig {
@@ -35,10 +36,11 @@ const DEFAULT_CONFIG: AmagConfig = {
     review: {
         consultant: { cli: "claude", model: "claude-opus-4-6", thinking: "max" },
         critic: { cli: "codex", model: "gpt-5.2", thinking: "medium" },
-        timeout_ms: 120000,
+        timeout_ms: 600000,
     },
     debug: {
-        consultant: { cli: "claude", model: "claude-opus-4-6", thinking: "high" },
+        consultant: { cli: "codex", model: "gpt-5.2", thinking: "high" },
+        timeout_ms: 600000,
     },
 };
 
@@ -68,6 +70,7 @@ export async function readConfig(targetDir: string): Promise<AmagConfig> {
                 },
                 debug: {
                     consultant: { ...DEFAULT_CONFIG.debug.consultant, ...raw?.debug?.consultant },
+                    timeout_ms: raw?.debug?.timeout_ms ?? DEFAULT_CONFIG.debug.timeout_ms,
                 },
             };
         } catch {
