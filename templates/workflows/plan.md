@@ -122,15 +122,20 @@ grep_search("bun test", Includes=["package.json"])
 
 If infrastructure EXISTS:
 > "I see you have test infrastructure ([framework]). Should this work include automated tests?
+>
 > - **TDD**: RED → GREEN → REFACTOR. Each task includes test cases as acceptance criteria.
+>
 > - **Tests after**: Implementation first, tests added as separate tasks.
+>
 > - **No tests**: Skip unit/integration tests.
 >
 > Regardless of choice, every task will include agent-executable QA scenarios (browser_subagent/run_command/grep_search to verify actual behavior)."
 
 If infrastructure DOES NOT exist:
 > "No test infrastructure found. Would you like to set it up as part of this plan?
+>
 > - **Yes**: Include framework selection + config + example test, then TDD for the actual work.
+>
 > - **No**: Skip — agent-executed QA scenarios will be the primary verification method."
 
 Record the decision. It affects the entire plan structure.
@@ -140,6 +145,27 @@ Record the decision. It affects the entire plan structure.
 ## Step 3: Interview (ONE question at a time)
 
 Ask via `notify_user`. Each question builds on the previous answer. Ask one question per turn so answers can inform follow-up questions. (Exception: when surfacing CRITICAL gaps in Step 6, batch all independent gaps into a single `notify_user` call.)
+
+> [!TIP]
+> **Formatting for readability**: When presenting options to the user, always:
+> - Format each option as a separate list item (`-`)
+> - Add a blank line between options for visual separation
+> - Bold the option label, then describe after the colon
+> - This ensures each option starts on its own line and is visually scannable
+
+**Progress tracking**: Update `task_boundary` at each interview phase transition:
+- After complexity assessment: TaskStatus = `"Planning: classified as [level] — starting interview"`
+- After each question answered: TaskStatus = `"Planning: [N] requirements confirmed — [next topic]"`
+- After clearance check passes: TaskStatus = `"Planning: requirements clear — generating plan"`
+- After plan generated: TaskStatus = `"Planning: plan ready for review"`
+
+**`notify_user` parameter strategy during interview:**
+
+| Complexity | BlockedOnUser | ShouldAutoProceed | Rationale |
+|---|---|---|---|
+| Trivial | `true` | `true` | Quick confirm, don't force the user to manually click through |
+| Simple | `true` | `true` for factual confirmations, `false` for scope decisions | Scope decisions need explicit input |
+| Complex | `true` | `false` | Every answer matters at this level |
 
 **Only ask about:**
 - Preferences: "Dark mode default or opt-in?"
@@ -151,7 +177,7 @@ Ask via `notify_user`. Each question builds on the previous answer. Ask one ques
 - Codebase facts (look them up via `codebase-explorer`)
 - Implementation details (that's your job)
 
-**For long planning sessions**: Write key decisions to `.amag/drafts/{topic}.md` as you go. Update after every meaningful user response. This prevents context loss. Delete draft files after the corresponding plan is persisted to `.amag/active-plan.md`.
+**For long planning sessions**: Write key decisions to `.amag/drafts/{topic}.md` as you go. Update after every meaningful user response. This prevents context loss. Delete draft files after the corresponding plan is persisted to `.amag/active-plan.md`. **For complex tasks (3+ interview turns)**: after each user response, update the draft file and include its path in `PathsToReview` on the NEXT `notify_user` call. This lets the user see all accumulated decisions at a glance in their IDE, instead of scrolling back through chat history.
 
 ```markdown
 # Draft: {Topic}
@@ -400,8 +426,9 @@ After generating the plan, present the user a choice via `notify_user`:
 
 > "Plan is ready. How would you like to proceed?
 >
-> **Option A — Start Work**: Plan looks solid, proceed with `/start-work`.
-> **Option B — Critical Review Pass**: Activate `plan-validator` skill to adversarially check every file reference, acceptance criterion, and QA scenario. Adds a review pass but guarantees the plan is airtight."
+> - **Option A — Start Work**: Plan looks solid, proceed with `/start-work`.
+>
+> - **Option B — Critical Review Pass**: Activate `plan-validator` skill to adversarially check every file reference, acceptance criterion, and QA scenario. Adds a review pass but guarantees the plan is airtight."
 
 **If Option B selected:**
 1. Load `plan-validator` skill
@@ -426,7 +453,12 @@ Present plan via `notify_user` with `BlockedOnUser: true` and `ShouldAutoProceed
 Once user approves:
 
 1. **Check for existing plan**: Read `.amag/active-plan.md`
-   - If exists with unchecked tasks → ask: *"Found incomplete plan [name] (X/Y done). Archive and start new, or resume?"*
+   - If exists with unchecked tasks → present via `notify_user`:
+     > "Found incomplete plan [name] (X/Y done). How should I proceed?
+     >
+     > - **Archive and start new**: Move old plan to `.amag/archive/` and create a fresh one.
+     >
+     > - **Resume**: Continue from where the existing plan left off."
    - If archive: move to `.amag/archive/{plan-name}-{timestamp}.md`
 
 2. **Write `.amag/active-plan.md`**:
