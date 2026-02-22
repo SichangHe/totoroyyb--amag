@@ -45,6 +45,11 @@ export const COMPONENTS: Component[] = [
     },
     {
         type: "workflow",
+        name: "plan-template",
+        description: "Implementation plan template — referenced by /plan workflow Step 7",
+    },
+    {
+        type: "workflow",
         name: "start-work",
         description: "/start-work — Execute an implementation plan task-by-task with category awareness",
     },
