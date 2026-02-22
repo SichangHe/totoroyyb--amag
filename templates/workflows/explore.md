@@ -97,7 +97,7 @@ For each relevant module (prioritize based on user's question):
    - **Notable patterns**: [Design decisions, trade-offs visible in the code]
    ```
 
-**Skill loading**: Skills are loaded per the workflow's phase definitions — the per-skill justification ceremony from GEMINI.md is not required within `/explore` phases. State which skills are active at each phase transition for transparency.
+**Skill loading**: Skills are loaded per the workflow's phase definitions — see GEMINI.md Skill Loading Protocol. State which skills are active at each phase transition for transparency.
 
 **Stopping condition per module**: Stop when same information surfaces from 2+ search angles (convergence). Cap at 3 search rounds per module.
 
@@ -166,7 +166,7 @@ Research is complete when:
 |---|---|---|
 | Phase tracking | `task.md` artifact (brain dir) | `[ ] Phase 1`, `[x] Phase 2`, etc. |
 | Research findings | `research-findings.md` artifact (brain dir) | Structured notes, survives context compression |
-| Cross-session persistence | KI system (Antigravity native) | Findings become Knowledge Items for future conversations |
+| Cross-session persistence | KI system (Antigravity native) | Antigravity's Knowledge Subagent may distill findings into KIs for future conversations |
 | NOT used | `.amag/active-plan.md` | Explore is not a plan — no Dual-Write, no `/resume` |
 
 ## What This Is NOT

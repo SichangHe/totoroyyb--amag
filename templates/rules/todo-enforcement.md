@@ -24,7 +24,7 @@
 | `task.md` artifact | Every task completion | Conversation-scoped checklist |
 | `.amag/active-plan.md` | Every task completion (plan-driven work) | Cross-session truth |
 
-**Dual-write rule**: When working from a plan, update BOTH `task.md` artifact AND `.amag/active-plan.md` on every task completion. Never update one without the other.
+**Dual-write rule**: When working from a plan, update ALL THREE on every task completion: `task.md` artifact, `.amag/active-plan.md`, AND `task_boundary`. Never update one without the others.
 
 ## Why This Matters
 

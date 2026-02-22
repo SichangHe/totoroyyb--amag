@@ -11,7 +11,7 @@ Routes git operations through structured best practices. Use for any git-related
 
 - User mentions: "commit", "rebase", "squash", "branch", "merge", "cherry-pick"
 - User asks: "who wrote this", "when was X added", "find the commit that..."
-- Any task that ends with committing changes
+- User explicitly requests committing changes
 
 ## Atomic Commits
 

@@ -50,7 +50,7 @@ Every user message has a surface form and a true intent. Extract the true intent
 
 **Explore exception**: When `/explore` is active (auto-engaged or explicit), the True Intent for understanding questions is **Understand → Synthesize**, never Implement/Fix. The user is studying the codebase, not requesting changes. `/explore` NEVER writes code, creates files, or modifies the project — it is strictly read-only unless the user gives an explicit instruction to write.
 
-**EXCEPTION: Explicit workflow invocations** (`/plan`, `/start-work`, `/resume`, `/ultrawork`, `/debug`, `/explore`) override True Intent Extraction. When a user invokes a workflow, follow that workflow's steps exactly — do not reinterpret the intent.
+**EXCEPTION: Explicit workflow invocations** (`/plan`, `/start-work`, `/resume`, `/ultrawork`, `/debug`, `/explore`, `/init-deep`) override True Intent Extraction. When a user invokes a workflow, follow that workflow's steps exactly — do not reinterpret the intent.
 
 ### Debugging Difficulty Gate
 
@@ -65,12 +65,15 @@ When True Intent maps to "Diagnose → Fix", assess difficulty BEFORE acting:
 
 ### Auto-Ultrawork
 
-Ultrawork-level intensity (thorough exploration, full verification, zero scope reduction) is **ALWAYS active** across all workflows and task types. You don't need to announce it — just apply the rigor. Only disabled if the user explicitly opts out.
+Ultrawork-level **rigor** (thorough exploration, full verification, zero scope reduction) is **ALWAYS active** across all workflows and task types. You don't need to announce it — just apply the rigor. Only disabled if the user explicitly opts out.
+
+**What Auto-Ultrawork activates**: thoroughness, zero scope reduction, full verification, no shortcuts. **What it does NOT activate**: the literal "100% certainty before acting" gate from `/ultrawork` — that gate only applies when the user explicitly invokes `/ultrawork`.
 
 Individual workflows may override **specific** ultrawork behaviors that conflict with their operation model, but the base rigor stays on:
 - `/plan`: Ultrawork rigor applies to plan quality, but the plan-approve-execute gate is never bypassed — ultrawork's "act decisively" does not mean "skip approval."
 - `/debug`: Ultrawork rigor applies, but "100% certainty before acting" is relaxed — debugging's hypothesis-iterate loop is inherently uncertain. The debug workflow has its own thoroughness guarantees.
 - `/explore`: Ultrawork rigor applies fully. Maximum exploration depth, zero shortcuts.
+- `deep-work` skill: Ultrawork rigor applies, but making reasonable assumptions about HOW to implement is permitted — only the GOAL must be clear.
 
 ## Phase 0 — Codebase Assessment (Open-ended tasks)
 
@@ -101,11 +104,17 @@ When decomposing work into sub-tasks (especially in `/start-work`), classify eac
 | **writing** | Docs, README, comments, technical writing | Anti-slop: no "delve"/"leverage", plain words, human tone |
 | **general** | Everything else | Standard: match existing patterns, verify with evidence |
 
+**Category tiebreaker**: When a task spans multiple categories, apply the **primary** category's mindset and load skills from **all** matching categories. Primary = the category that describes the *hardest* part of the task.
+
 Load relevant skills when a category matches: `frontend-ui-ux` for visual, `deep-work` for deep, `writing` for writing, `git-master` for git operations.
 
-### Mandatory Skill Justification (before loading any skill)
+### Skill Loading Protocol
 
-**BEFORE invoking any skill**, declare your reasoning in this format:
+**"Loading a skill"** means reading its SKILL.md file and adopting its instructions for the current phase. "Load", "activate", and "use patterns from" are synonyms — they all mean: read the skill's SKILL.md and follow its guidance.
+
+### Mandatory Skill Justification (ad-hoc skill loading only)
+
+**When loading a skill outside of a workflow's defined phases** (ad-hoc), declare your reasoning in this format:
 
 ```
 Skill: [name]
@@ -114,7 +123,9 @@ Expected outcome: [what success looks like after this skill is applied]
 Omitted skills: [name] — [why it doesn't apply to this task]
 ```
 
-**Omission justification is mandatory.** Skipping it means you haven't read the skill descriptions. Every available skill must be consciously evaluated — not pattern-matched by name. Missing a relevant skill = suboptimal output with no recovery path.
+**Exemption**: When a workflow explicitly names which skills to load at which phase (e.g., `/plan` Step 1 says "Load `codebase-explorer`"), the workflow definition itself is the justification — the per-skill ceremony is not required. The ceremony applies only to ad-hoc skill loading outside of workflow-defined phases.
+
+**Omission justification is mandatory for ad-hoc loading.** Skipping it means you haven't read the skill descriptions. Every available skill must be consciously evaluated — not pattern-matched by name. Missing a relevant skill = suboptimal output with no recovery path.
 
 ## Execution — Parallel by Default
 
@@ -191,6 +202,8 @@ For tasks with 2+ steps:
 ### Verification Protocol (NON-NEGOTIABLE)
 
 After EVERY implementation, complete ALL steps in order. No shortcuts.
+
+> Steps are numbered 1, 2, 2.5, 3, 4, 5, 6. References to "Steps 1-6" throughout this system include Step 2.5.
 
 #### Step 1: Spec Compliance (did I build the RIGHT thing?)
 
@@ -367,4 +380,4 @@ When facing architecture decisions, debugging hard problems, or reviewing existi
 | Blind retry (re-running same failing command/action without diagnosing why it failed) | Never |
 | `WaitDurationSeconds > 60` on `command_status` | Never |
 | Leaving a hung background command running without killing it | Never |
-| Loading a skill without declaring why (and why others are omitted) | Never |
+| Loading a skill ad-hoc without declaring why (and why others are omitted) | Never |

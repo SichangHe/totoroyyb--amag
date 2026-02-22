@@ -38,8 +38,9 @@ Calculate: `completed / total`
 
 1. Read `.amag/active-plan.md` for task list and progress
 2. Search for an `implementation_plan.md` artifact (if in the same conversation that created it)
-3. If detailed plan not available (new conversation): the checklist in `active-plan.md` is sufficient to continue
-4. Create `task.md` artifact in this conversation, seeded from `active-plan.md` checkboxes
+3. Read `.amag/notepads/{plan-name}.md` if it exists — it contains learnings accumulated during previous task execution
+4. If detailed plan not available (new conversation): the checklist in `active-plan.md` is sufficient to continue
+5. Create `task.md` artifact in this conversation, seeded from `active-plan.md` checkboxes
 
 ### 4. Begin Execution
 
@@ -47,7 +48,7 @@ Calculate: `completed / total`
 2. Set `task_boundary` with first uncompleted task
 3. Execute following `/start-work` protocol from Step 3 onwards
 
-All progress updates follow the **dual-write protocol**: update both `.amag/active-plan.md` and `task.md` artifact simultaneously.
+All progress updates follow the **dual-write protocol**: update `.amag/active-plan.md`, `task.md` artifact, AND `task_boundary` simultaneously.
 
 ## When to Use
 

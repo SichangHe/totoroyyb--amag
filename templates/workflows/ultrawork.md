@@ -31,7 +31,7 @@ Activate maximum-effort autonomous execution. You MUST achieve 100% certainty be
 
 1. **THINK DEEPLY** — What is the user's TRUE intent?
 2. **EXPLORE THOROUGHLY** — Fire 3+ parallel searches from different angles
-3. **READ EXTENSIVELY** — Spend time understanding before acting (5-15 min of reading is normal)
+3. **READ EXTENSIVELY** — Read 5-10 related files minimum before acting
 4. **ASK THE USER** — If ambiguity remains after exploration, ask. Don't guess.
 
 ## Execution Rules
@@ -82,7 +82,7 @@ Follow the full Verification Protocol from `GEMINI.md` (Steps 1-6), PLUS these u
 Even in ultrawork mode, track your work:
 1. Create `task.md` artifact immediately with task breakdown
 2. Update `task_boundary` at each major phase transition
-3. If working from a plan: dual-write progress to both `task.md` and `.amag/active-plan.md`
+3. If working from a plan: dual-write progress to `task.md`, `.amag/active-plan.md`, and `task_boundary`
 4. On completion: mark all items done, update `last_updated` timestamps
 
 ### Completion Self-Check
@@ -111,5 +111,5 @@ Follow the full Error Recovery Protocol from `error-recovery.md`. Key rules that
 ## When NOT to Use
 
 - Simple, well-scoped tasks (just do them directly)
-- Plan execution (use `/start-work` instead)
+- Plan execution (use `/start-work` instead — ultrawork rigor auto-applies there)
 - Exploratory questions ("how does X work?")

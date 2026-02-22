@@ -106,6 +106,8 @@ Stop searching when:
 
 **Cap at 2 rounds. Do NOT over-explore. Time is precious.**
 
+**When loaded alongside `deep-work`**: Use codebase-explorer's search patterns, but satisfy deep-work's minimum file count (5-10 files). If 2 search rounds aren't enough to reach the minimum, run a 3rd targeted round.
+
 ## Synthesis Format
 
 After search rounds complete, synthesize:

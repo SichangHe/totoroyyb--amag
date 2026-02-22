@@ -12,6 +12,9 @@ Comprehensive work plan through structured consultation. Classify complexity →
 > [!IMPORTANT]
 > **Auto-Ultrawork rigor applies to plan quality.** The plan-approve-execute gate is never bypassed — ultrawork's "act decisively" does not mean "skip approval." This workflow produces a plan for user review — it never executes.
 
+> [!TIP]
+> **Explore handoff**: If a `research-findings.md` artifact exists in this conversation (from a prior `/explore`), read it as pre-existing context. Skip redundant exploration that the research already covers.
+
 ---
 
 ## Step 0: Complexity Assessment
@@ -148,7 +151,7 @@ Ask via `notify_user`. Each question builds on the previous answer.
 - Codebase facts (look them up via `codebase-explorer`)
 - Implementation details (that's your job)
 
-**For long planning sessions**: Write key decisions to `.amag/drafts/{topic}.md` as you go. Update after every meaningful user response. This prevents context loss.
+**For long planning sessions**: Write key decisions to `.amag/drafts/{topic}.md` as you go. Update after every meaningful user response. This prevents context loss. Delete draft files after the corresponding plan is persisted to `.amag/active-plan.md`.
 
 ```markdown
 # Draft: {Topic}
@@ -347,6 +350,8 @@ Wave FINAL (After all tasks — verification):
   > - ❌ "Verify it works correctly" — HOW?
   > - ❌ "Check the API returns data" — WHAT data?
   > - ❌ Any scenario without an evidence path
+
+  > **Evidence directory**: `.amag/evidence/` is created when evidence capture begins. Evidence files are screenshots (`.png`), command output (`.txt`), or browser recordings (`.webp`). Evidence persists until the plan is archived.
 
 ---
 

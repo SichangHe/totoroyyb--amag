@@ -25,7 +25,7 @@ Read an existing plan and execute it task-by-task with verification. This is the
 - If `implementation_plan.md` artifact also exists → use it for detailed context per task
 
 **If only `implementation_plan.md` artifact exists (no active-plan.md):**
-- This means the plan was approved but Step 8 of `/plan` wasn't executed, or this is the first `/start-work` in the same conversation
+- This means the plan was approved but Step 10 of `/plan` wasn't executed, or this is the first `/start-work` in the same conversation
 - Create `.amag/active-plan.md` from the artifact's task list before proceeding
 
 **If neither found:**
@@ -52,7 +52,7 @@ Before executing, classify what kind of work this task requires:
 | Category | When to Activate | Persona Shift |
 |---|---|---|
 | **visual** | UI, CSS, frontend, design, animation | Design-first: bold aesthetics, distinctive typography, cohesive palettes |
-| **deep** | Complex logic, architecture, multi-file refactor | Autonomous: explore 5-15 min silently, build full mental model, act decisively |
+| **deep** | Complex logic, architecture, multi-file refactor | Autonomous: explore extensively (5-10 files minimum), build full mental model, act decisively |
 | **quick** | Single file, typo fix, small change | Efficient: fast, no over-engineering, minimal overhead |
 | **writing** | Documentation, README, comments, tech writing | Anti-slop: no "delve"/"leverage", plain words, human tone, varied sentences |
 | **general** | Everything else | Standard execution with full verification |
