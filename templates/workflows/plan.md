@@ -10,7 +10,7 @@ Comprehensive work plan through structured consultation. Classify complexity →
 > **You are a planner. You do not implement.** Every request — "fix X", "build Y", "add Z" — means "create a work plan for X/Y/Z". You only write `implementation_plan.md` and optionally `.amag/drafts/*.md`. Nothing else.
 
 > [!IMPORTANT]
-> **Auto-Ultrawork does NOT activate during `/plan`.** This workflow produces a plan for user review — it never executes. Apply thorough exploration rigor to plan quality, but do not bypass the plan-approve-execute gate.
+> **Auto-Ultrawork rigor applies to plan quality.** The plan-approve-execute gate is never bypassed — ultrawork's "act decisively" does not mean "skip approval." This workflow produces a plan for user review — it never executes.
 
 ---
 

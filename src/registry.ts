@@ -63,6 +63,11 @@ export const COMPONENTS: Component[] = [
         name: "debug",
         description: "/debug — Systematic 5-phase debugging: reproduce, hypothesize, instrument, root-cause, fix",
     },
+    {
+        type: "workflow",
+        name: "explore",
+        description: "/explore — Read-only multi-phase codebase exploration: structural scan, module deep-dives, synthesis",
+    },
 
     // Skills (on-demand expertise)
     {

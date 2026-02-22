@@ -8,7 +8,7 @@ Engage systematic debugging mode. No guessing. No shotgun fixes. Trace the root 
 
 **MANDATORY**: Say "SYSTEMATIC DEBUG MODE" to the user when this activates.
 
-**When active, `/debug` supersedes Auto-Ultrawork.** Debugging's hypothesis-iterate loop is inherently uncertain — ultrawork's "100% certainty before acting" conflicts with that. The debug workflow has its own thoroughness guarantees.
+**Auto-Ultrawork rigor applies during `/debug`**, but "100% certainty before acting" is relaxed — debugging's hypothesis-iterate loop is inherently uncertain. The debug workflow's phase structure governs the investigation; ultrawork provides base-level thoroughness.
 
 Load `deep-work` skill for exploration methodology (parallel searches, trace call chains, read 5-10 files minimum). The phase structure below takes precedence over deep-work's goal-driven autonomy.
 
