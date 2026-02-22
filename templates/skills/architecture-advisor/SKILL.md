@@ -29,7 +29,7 @@ Shift into read-only, high-reasoning consulting mode. When activated, stop imple
 - `/plan` Step 1 for Architecture intent
 - `/start-work` Final Verification Wave (for plan compliance audit)
 - Default behavior after 2+ failed fix attempts
-- GEMINI.md error-recovery.md 3-failure escalation
+- `/debug` Phase 4 hypothesis escalation (step before external CLI consultation)
 
 ## Behavior in Advisor Mode
 

@@ -20,8 +20,13 @@ export interface ReviewConfig {
     timeout_ms: number;
 }
 
+export interface DebugConfig {
+    consultant: ReviewRoleConfig;
+}
+
 export interface AmagConfig {
     review: ReviewConfig;
+    debug: DebugConfig;
 }
 
 // --- Defaults ---
@@ -31,6 +36,9 @@ const DEFAULT_CONFIG: AmagConfig = {
         consultant: { cli: "claude", model: "claude-opus-4-6", thinking: "max" },
         critic: { cli: "codex", model: "gpt-5.2", thinking: "medium" },
         timeout_ms: 120000,
+    },
+    debug: {
+        consultant: { cli: "claude", model: "claude-opus-4-6", thinking: "high" },
     },
 };
 
@@ -57,6 +65,9 @@ export async function readConfig(targetDir: string): Promise<AmagConfig> {
                     consultant: { ...DEFAULT_CONFIG.review.consultant, ...raw?.review?.consultant },
                     critic: { ...DEFAULT_CONFIG.review.critic, ...raw?.review?.critic },
                     timeout_ms: raw?.review?.timeout_ms ?? DEFAULT_CONFIG.review.timeout_ms,
+                },
+                debug: {
+                    consultant: { ...DEFAULT_CONFIG.debug.consultant, ...raw?.debug?.consultant },
                 },
             };
         } catch {

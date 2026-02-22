@@ -175,7 +175,52 @@ After **3 failed hypotheses** (3 root cause theories tested and eliminated):
    Hypothesis 3: [claim] → ELIMINATED because [evidence]
    ```
 4. In advisor mode: re-examine the problem from a structural/architectural angle
-5. If `architecture-advisor` cannot resolve → **ASK USER** with full context
+5. If `architecture-advisor` cannot resolve → **attempt external CLI consultation**:
+
+   Update `task_boundary`: `TaskStatus: "Escalation: consulting external debug agent..."`
+
+   **Write request** to `.amag/reviews/debug-{timestamp}-request.md` using this template:
+
+   ```markdown
+   # SYSTEM
+   You are a Debug Consultant. Read-only analysis. No code changes.
+   Provide one clear recommendation for the root cause.
+
+   ## Hard Constraints
+   - ANALYSIS ONLY — do NOT modify files or run commands
+   - Focus on ROOT CAUSE, not symptoms
+   - Cite specific files and line numbers in your analysis
+
+   ## Symptom
+   {describe the bug — what's happening vs what's expected}
+
+   ## Eliminated Hypotheses
+   {for each eliminated hypothesis: claim, evidence, why eliminated}
+
+   ## Relevant Code
+   {paste key code sections that were investigated}
+
+   ## Question
+   What is the root cause? Provide your analysis under ## Recommendation.
+
+   ## Response Format
+   ## Recommendation
+   [Your analysis and suggested root cause + fix approach]
+   ```
+
+   **Load `external-cli-runner` skill.** Invoke with:
+   - **configPath**: `debug.consultant`
+   - **requestFile**: `.amag/reviews/debug-{timestamp}-request.md`
+   - **responseFileRaw**: `.amag/reviews/debug-{timestamp}-response-raw.md`
+   - **responseFile**: `.amag/reviews/debug-{timestamp}-response.md`
+   - **requiredField**: `## Recommendation`
+   - **fallbackAction**: "Skip external consultation — proceed to ASK USER"
+
+   **If the runner returns success**: read the response, apply the recommendation, re-attempt the fix from Phase 4. If the fix still fails → proceed to step 6.
+
+   **If the runner returns failure** (CLI not found or 3 retries exhausted): skip to step 6.
+
+6. **ASK USER** with full context — include eliminated hypotheses, architecture-advisor analysis, and external CLI recommendation (if available)
 
 ### Command-Level Failures
 

@@ -86,11 +86,54 @@ After 3 consecutive failed attempts on the same issue (whether fix attempts, com
    Attempt 3: [what I tried] → [what happened]
    ```
 4. **TRY A FUNDAMENTALLY DIFFERENT APPROACH** — not a variation of the same thing, but a genuinely different strategy
-5. If the different approach also fails: **ASK USER** for guidance
+5. If the different approach also fails → **attempt external CLI consultation**:
+
+   Update `task_boundary`: `TaskStatus: "Escalation: consulting external debug agent..."`
+
+   **Write request** to `.amag/reviews/debug-{timestamp}-request.md` using this template:
+
+   ```markdown
+   # SYSTEM
+   You are a Debug Consultant. Read-only analysis. No code changes.
+
+   ## Hard Constraints
+   - ANALYSIS ONLY — do NOT modify files or run commands
+   - Focus on WHY commands are failing, not workarounds
+
+   ## Problem
+   {describe what keeps failing}
+
+   ## Failed Attempts
+   {for each attempt: what was tried, what happened, error output}
+
+   ## Relevant Code/Config
+   {paste relevant sections}
+
+   ## Question
+   Why do these attempts keep failing? Provide analysis under ## Recommendation.
+
+   ## Response Format
+   ## Recommendation
+   [Your analysis and suggested fix approach]
+   ```
+
+   **Load `external-cli-runner` skill.** Invoke with:
+   - **configPath**: `debug.consultant`
+   - **requestFile**: `.amag/reviews/debug-{timestamp}-request.md`
+   - **responseFileRaw**: `.amag/reviews/debug-{timestamp}-response-raw.md`
+   - **responseFile**: `.amag/reviews/debug-{timestamp}-response.md`
+   - **requiredField**: `## Recommendation`
+   - **fallbackAction**: "Skip external consultation — proceed to ASK USER"
+
+   **If the runner returns success**: read the response, apply the recommendation.
+
+   **If the runner returns failure** (CLI not found or 3 retries exhausted): skip to step 6.
+
+6. **ASK USER** for guidance — include the documented attempts and external CLI recommendation (if available)
 
 ### When Operating Under `/debug` Workflow
 
-The `/debug` workflow has its own escalation for **hypothesis-level failures** (root cause theories that prove wrong): 3 failed hypotheses → `architecture-advisor` → user. That escalation governs debugging reasoning. This file's 3-failure escalation governs **command-level failures** (builds, tests, hung processes). If both apply simultaneously, the debug hypothesis escalation takes precedence for the investigation, while this file's protocol applies to any commands that fail during that investigation.
+The `/debug` workflow has its own escalation for **hypothesis-level failures** (root cause theories that prove wrong): 3 failed hypotheses → `architecture-advisor` → external CLI consultation → user. That escalation governs debugging reasoning. This file's 3-failure escalation governs **command-level failures** (builds, tests, hung processes). Both escalation paths share the same external CLI consultation mechanism via `debug.consultant` config. If both apply simultaneously, the debug hypothesis escalation takes precedence for the investigation, while this file's protocol applies to any commands that fail during that investigation.
 
 ## Self-Counting Rule
 
