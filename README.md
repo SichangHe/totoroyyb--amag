@@ -134,7 +134,7 @@ External agent features require the corresponding CLI tools to be installed and 
 
 | CLI | Install | Auth |
 |-----|---------|------|
-| [Claude Code](https://code.claude.com/docs/en/overview) | `curl -fsSL https://claude.ai/install.sh | bash` | You might need to login with `claude` CLI first |
+| [Claude Code](https://docs.anthropic.com/en/docs/claude-code/overview) | `curl -fsSL https://claude.ai/install.sh \| bash` | Run `claude` and follow the OAuth login prompt |
 | [Codex CLI](https://github.com/openai/codex) | `npm install -g @openai/codex` | `codex login` |
 | [Gemini CLI](https://github.com/google-gemini/gemini-cli) | `npm install -g @google/gemini-cli` | You might need to login with `gemini` CLI first |
 

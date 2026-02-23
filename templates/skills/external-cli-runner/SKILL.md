@@ -67,7 +67,7 @@ Read `model` and `thinking` from config. Map thinking level, build command, exec
 
 | Config value | claude `--effort` | codex `-c model_reasoning_effort` | gemini behavior |
 |---|---|---|---|
-| `max` | `high` | `high` | Default |
+| `max` | `max` | `high` | Default |
 | `high` | `high` | `high` | Default |
 | `medium` | `medium` | `medium` | Default |
 | `low` | `low` | `low` | Default |
@@ -85,17 +85,12 @@ run_command: claude --print --model {model} --effort {thinking_mapped} --fallbac
 
 **Codex:**
 ```
-run_command: codex exec --full-auto -m {model} -c model_reasoning_effort="{thinking_mapped}" -o {responseFileRaw} < {requestFile}
-```
-
-If `-o` flag is not available on the installed version, fall back to stdout redirect:
-```
 run_command: codex exec --full-auto -m {model} -c model_reasoning_effort="{thinking_mapped}" < {requestFile} > {responseFileRaw} 2>&1
 ```
 
 **Gemini CLI:**
 ```
-run_command: cat {requestFile} | gemini --yolo > {responseFileRaw} 2>&1
+run_command: cat {requestFile} | gemini -m {model} --yolo > {responseFileRaw} 2>&1
 ```
 
 ### Execution Protocol
