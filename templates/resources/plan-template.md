@@ -7,9 +7,13 @@ description: Implementation plan template — referenced by /plan workflow Step 
 ## TL;DR
 
 > **Goal**: [1-2 sentences: core objective]
+>
 > **Deliverables**: [Bullet list of concrete outputs]
+>
 > **Effort**: Quick | Short | Medium | Large | XL
+>
 > **Parallel Execution**: YES - N waves | NO - sequential
+>
 > **Critical Path**: Task A → Task B → Task C
 
 ---
