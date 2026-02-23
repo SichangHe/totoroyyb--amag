@@ -173,6 +173,10 @@ When a command runs in the background (build, test suite, compilation):
 4. **See `error-recovery.md` Long-Running Command Protocol** for the full decision tree.
 5. **External CLI agents are exempt** — the poll-and-kill heuristic does not apply to external agent invocations (Claude, Codex, Gemini). Those use a wall-clock timeout defined in `external-cli-runner` skill. Do not kill an external agent just because it hasn't produced output for 2 polls.
 
+### Auto-Safe Paths
+
+Writes to the `.amag/` directory (creating, updating, archiving plan files) are always safe. Set `SafeToAutoRun: true` for any `run_command` targeting `.amag/`. File writes to `.amag/` should always use `Complexity: 1` — they are routine state updates, not destructive operations.
+
 ### Exploration Protocol
 
 When investigating unfamiliar code, launch 3+ parallel searches from different angles:
