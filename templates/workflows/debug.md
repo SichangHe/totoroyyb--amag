@@ -10,7 +10,7 @@ Engage systematic debugging mode. No guessing. No shotgun fixes. Trace the root 
 
 > **🔍 SYSTEMATIC DEBUG MODE**
 
-**Auto-Ultrawork rigor applies during `/debug`**, but "100% certainty before acting" is relaxed — debugging's hypothesis-iterate loop is inherently uncertain. The debug workflow's phase structure governs the investigation; ultrawork provides base-level thoroughness.
+**Auto-Ultrawork rigor applies during `/debug`**, but "100% certainty before acting" is relaxed — debugging's hypothesis-iterate loop is inherently uncertain.
 
 Load `deep-work` skill for exploration methodology (parallel searches, trace call chains, read 5-10 files minimum). The phase structure below takes precedence over deep-work's goal-driven autonomy.
 
@@ -19,7 +19,7 @@ Load `deep-work` skill for exploration methodology (parallel searches, trace cal
 Call `task_boundary` at **every phase transition** with:
 - **TaskName**: `"Debugging: {symptom}"`
 - **Mode**: `EXECUTION`
-- **TaskStatus**: Use the directive shown at each phase (e.g. `"Phase 2/6: Reproducing the bug"`)
+- **TaskStatus**: Phase directive (e.g. `"Phase 2/6: Reproducing the bug"`)
 - **TaskSummary**: Cumulative — hypotheses formed/eliminated, evidence found
 
 ## How This Gets Engaged
@@ -27,151 +27,127 @@ Call `task_boundary` at **every phase transition** with:
 | Trigger | Entry Point |
 |---|---|
 | User says `/debug` explicitly | Phase 1 |
-| Intent gate classifies a bug as HARD (see `GEMINI.md` difficulty gate) | Phase 1 |
-| Transparent upgrade — inline fix failed, revealed deeper issue | Phase 2 (carry failed attempt as eliminated hypothesis) |
+| Intent gate classifies a bug as HARD | Phase 1 |
+| Transparent upgrade — inline fix failed | Phase 2 (carry failed attempt as eliminated hypothesis) |
 | User says "debug", "trace this bug", "find the root cause" | Phase 1 |
 | User says `/debug-escalate` | Escalation → External CLI (immediate) |
-| User says "consult external", "ask codex", "ask claude", "get second opinion" | Escalation → External CLI (immediate) |
+| "consult external", "ask codex/claude", "get second opinion" | Escalation → External CLI (immediate) |
 
-**Do NOT use for**: typos/one-line fixes (just fix directly), build config issues (`error-recovery.md`), feature requests disguised as bugs.
+**Do NOT use for**: typos/one-line fixes, build config issues (`error-recovery.md`), feature requests disguised as bugs.
 
 ## Phase 1 — Triage
 <!-- task_boundary: TaskStatus="Phase 1/6: Triaging bug type" -->
 
-Classify the bug type. This determines your investigation strategy.
+Classify the bug type to determine investigation strategy:
 
-| Bug Type | Key Investigation Strategy |
+| Bug Type | Key Strategy |
 |---|---|
-| **Test failure** | Read FULL error + stack trace. Check test setup/fixtures. Trace unexpected value to source |
-| **Runtime error** | Capture stack trace. Find the throw line. Trace null/undefined backward to origin |
-| **"It worked before"** | Check `git log` / `git diff` for recent changes. Find the changed assumption. Use `git bisect` if needed |
-| **Intermittent** | Look for race conditions, shared mutable state, timing dependencies, async ordering |
-| **Wrong behavior** (no error) | Compare expected vs actual. Find where the logic diverges. Add logging/assertions to narrow |
+| **Test failure** | Read FULL error + stack trace → check test setup → trace unexpected value to source |
+| **Runtime error** | Capture stack trace → find throw line → trace null/undefined backward |
+| **"It worked before"** | `git log`/`git diff` → find changed assumption → `git bisect` if needed |
+| **Intermittent** | Race conditions, shared mutable state, timing dependencies, async ordering |
+| **Wrong behavior** | Compare expected vs actual → find logic divergence → add logging to narrow |
 
-**Output**: State the bug type and your investigation strategy before proceeding.
+**Output**: State the bug type and investigation strategy.
 
 ## Phase 2 — Reproduce (NEVER SKIP)
 <!-- task_boundary: TaskStatus="Phase 2/6: Reproducing the bug" -->
 
 **If you can't reproduce it, you can't verify a fix.**
 
-1. **Find or write a failing test** that captures the bug behavior
-   - If the project has a test framework: write a test that fails with the current bug
-   - If no test framework: identify exact manual repro steps and document them
-2. **Confirm the reproduction is reliable** — run it 2-3 times
-3. **Minimize the repro** — strip away unrelated setup until you have the smallest case that still fails
+1. **Find or write a failing test** that captures the bug
+2. **Confirm reliability** — run 2-3 times
+3. **Minimize** — strip to smallest failing case
 
-**If reproduction fails**: This IS useful information. Document what you tried. The bug may be environment-specific, timing-dependent, or already fixed. Report to the user.
+**If reproduction fails**: document attempts and report to user.
 
-**Output**: A failing test or documented repro steps that reliably triggers the bug.
+**Output**: A failing test or documented repro steps.
 
 ## Phase 3 — Root Cause Investigation
 <!-- task_boundary: TaskStatus="Phase 3/6: Investigating root cause" -->
 
-This is where you use `deep-work` exploration methodology. Fire parallel searches, trace call chains, read broadly.
+Use `deep-work` exploration: parallel searches, trace call chains, read broadly.
 
-### Step 1: Trace from Symptom to Source
+### Trace from Symptom to Source
 
-**Root Cause Tracing**: OBSERVE (where error manifests) → IMMEDIATE CAUSE (which code is wrong) → TRACE UPWARD (what called it, what data) → FOLLOW DATA (where bad value originated) → FIND TRIGGER (original source of problem).
+OBSERVE (where error manifests) → IMMEDIATE CAUSE (which code) → TRACE UPWARD (callers, data) → FOLLOW DATA (bad value origin) → FIND TRIGGER (original source).
 
 **Key principle**: Never fix where the error appears — trace to where it starts.
 
-### Step 2: Form Competing Hypotheses
-
-After tracing, form **2-3 hypotheses** about the root cause:
+### Form 2-3 Competing Hypotheses
 
 ```
 Hypothesis 1: [specific claim about what's wrong and why]
 Hypothesis 2: [alternative explanation]
-Hypothesis 3: [if applicable]
 ```
 
-### Step 3: Eliminate Systematically
+### Eliminate Systematically
 
-For each hypothesis:
-1. **Predict** — If this hypothesis is correct, what specific behavior would I observe?
-2. **Test** — Design a minimal check that distinguishes this hypothesis from others
-3. **Observe** — Run the check. Does the prediction hold?
-4. **Verdict** — CONFIRMED or ELIMINATED. Move on.
+For each hypothesis: **Predict** → **Test** → **Observe** → **Verdict** (CONFIRMED or ELIMINATED).
 
-**Change ONE variable at a time.** If you change two things, you learn nothing.
+**Change ONE variable at a time.**
 
-**Output**: The confirmed root cause with evidence. You must be able to explain WHY the bug exists, not just WHERE.
+**Output**: Confirmed root cause with evidence — explain WHY the bug exists, not just WHERE.
 
-## Deep Analysis Checkpoint (after Phase 3)
+## Deep Analysis Checkpoint
 
-After presenting your confirmed root cause, **pause and offer the user a choice** via `notify_user` with `BlockedOnUser: true`:
+After presenting your confirmed root cause, **offer the user a choice** via `notify_user` (`BlockedOnUser: true`):
 
 ```
 ## Root Cause Found
 
-**Root Cause**: {your confirmed root cause with evidence}
+**Root Cause**: {confirmed root cause with evidence}
 
 ---
 
-### How would you like to proceed?
-
 **Option A** — Proceed to fix (default)
-Continue to Pattern Analysis → Fix → Verification.
 
-**Option B** — Deep analysis from a second opinion
-Consult {agent_label} for a structural review before fixing.
+**Option B** — Deep analysis from {agent_label}
 ```
 
 **Determining `{agent_label}`**: Read `.amag/config.json` → `debug.consultant.cli`:
-- If `cli` is set (e.g. `codex`, `claude`) → label: "external agent (`{cli}` / `{model}`)"
-- If `cli` is null → label: "architecture-advisor (native deep analysis)"
+- If set → "external agent (`{cli}` / `{model}`)"
+- If null → "architecture-advisor (native)"
 
-**If user picks Option A** (or doesn't respond with a clear choice): continue to Phase 4.
+**Option A**: continue to Phase 4.
 
-**If user picks Option B**:
-1. If `debug.consultant.cli` is configured:
-   - Write request to `.amag/reviews/debug-{timestamp}-deepanalysis-request.md` using template in `.agent/resources/debug-escalation-template.md`
-   - Load `external-cli-runner` skill. Invoke with:
-     - **configPath**: `debug.consultant`
-     - **requestFile**: `.amag/reviews/debug-{timestamp}-deepanalysis-request.md`
-     - **responseFileRaw**: `.amag/reviews/debug-{timestamp}-deepanalysis-response-raw.md`
-     - **responseFile**: `.amag/reviews/debug-{timestamp}-deepanalysis-response.md`
-     - **requiredField**: `## Recommendation`
-     - **fallbackAction**: "Fall back to architecture-advisor (native)"
-2. If `debug.consultant.cli` is null (or external CLI failed):
-   - Load `architecture-advisor` skill — perform native deep analysis
-3. Present findings to user, then continue to Phase 4 with the analysis incorporated
+**Option B**:
+1. If external CLI configured → follow `/debug-escalate` procedure (write request, invoke `external-cli-runner` with `configPath: debug.consultant`, `fallbackAction: "Fall back to architecture-advisor"`)
+2. If null or CLI failed → load `architecture-advisor` skill for native analysis
+3. Present findings, then continue to Phase 4
 
 ## Phase 4 — Pattern Analysis
 <!-- task_boundary: TaskStatus="Phase 4/6: Analyzing patterns against working code" -->
 
-Before fixing, verify your understanding by comparing against working code:
+Verify understanding by comparing against working code:
 
-1. **Find working examples** — Locate similar code in the codebase that works correctly
-2. **Compare thoroughly** — What's different between the working code and the broken code?
-3. **Validate the difference** — Does the difference explain the bug? (It should, if your root cause is correct)
+1. **Find working examples** — similar code that works correctly
+2. **Compare** — what's different?
+3. **Validate** — does the difference explain the bug?
 
-This step catches cases where the "root cause" is actually a symptom of a wrong assumption. If working and broken code differ in ways your hypothesis doesn't explain, your hypothesis is wrong — go back to Phase 2.
+If working and broken code differ in ways your hypothesis doesn't explain → go back to Phase 3.
 
-**Output**: Confirmation that pattern analysis supports the root cause, OR a revised hypothesis.
+**Output**: Confirmation that pattern analysis supports the root cause, OR revised hypothesis.
 
 ## Phase 5 — Fix (Minimal & Surgical)
 <!-- task_boundary: TaskStatus="Phase 5/6: Applying surgical fix" -->
 
-1. **Implement a single fix** that addresses the root cause — not the symptom
-2. **Change ONE thing** — if your fix touches many files, question whether you're fixing the root cause or patching symptoms
-3. **Verify the failing test/repro now passes**
-4. **Run the full test suite** — check for regressions
-5. **If the fix fails**: Do NOT try a variation. Go back to Phase 2 and re-examine your hypothesis
+1. **Single fix** addressing root cause — not symptom
+2. **Change ONE thing** — multi-file fixes = question your root cause
+3. **Verify** failing test/repro now passes
+4. **Full test suite** — check regressions
+5. **If fix fails**: go back to Phase 3, re-examine hypothesis
 
 ### Red Flags — Stop Immediately If:
 
-- You're thinking "quick fix for now, investigate later"
-- You're on your 3rd fix attempt without re-examining the root cause
-- Your fix creates new failures in unrelated areas (signals architectural issue)
-- You're suppressing errors rather than fixing them
-- You can't explain WHY the fix works
+- Thinking "quick fix for now, investigate later"
+- 3rd fix attempt without re-examining root cause
+- Fix creates new failures in unrelated areas
+- Suppressing errors rather than fixing them
+- Can't explain WHY the fix works
 
 ## Phase 6 — Verification & Hardening
 <!-- task_boundary: TaskStatus="Phase 6/6: Verifying fix and checking for systemic risk" -->
-
-### Verify the Fix
 
 Follow the full Verification Protocol from `GEMINI.md` (Steps 1-6), PLUS:
 
@@ -179,79 +155,54 @@ Follow the full Verification Protocol from `GEMINI.md` (Steps 1-6), PLUS:
 - [ ] Failing test/repro now passes
 - [ ] Fix addresses root cause, not symptoms
 - [ ] Full test suite passes (no regressions)
-- [ ] Fix is minimal and focused — no scope creep
+- [ ] Fix is minimal — no scope creep
 
 ### Systemic Check
 
-The bug you just fixed may exist elsewhere:
-
 1. `grep_search` for the same pattern that caused the bug
-2. If found in other locations → note them and report to the user
-3. Do NOT fix other instances without discussing scope — just report
+2. Found elsewhere → report to user (do NOT fix without discussing scope)
 
-### Document Root Cause
-
-In your final report to the user, include:
+### Debug Report
 
 ```
-## Debug Report
-
 **Root Cause**: [What was actually wrong and why]
-
-**Fix**: [What was changed to address it]
-
-**Systemic Risk**: [Whether the same pattern exists elsewhere — yes/no + locations]
+**Fix**: [What was changed]
+**Systemic Risk**: [Same pattern elsewhere — yes/no + locations]
 ```
 
 ## Escalation
 
 > [!IMPORTANT]
-> **User override**: If the user explicitly requests external help at any point during `/debug` — via `/debug-escalate`, keyword triggers ("consult external", "ask codex", "ask claude", "get second opinion"), or any clear request — skip the 3-hypothesis gate and proceed directly to External CLI Consultation below.
+> **User override**: If the user requests external help at any point — via `/debug-escalate`, keyword triggers, or any clear request — skip the 3-hypothesis gate and follow the `/debug-escalate` workflow immediately.
 
 ### User-Triggered Escalation
 
-These triggers give the user immediate access to external consultation without waiting for automatic escalation:
-
 | Trigger | Action |
 |---|---|
-| `/debug-escalate` | Immediately invoke external CLI consultation |
-| "consult external", "ask codex", "ask claude", "get second opinion" | Same as `/debug-escalate` |
-| User explicitly asks for external help (any phrasing) | Same as `/debug-escalate` |
-
-When triggered:
-1. Collect current debug context: symptom, bug type, any hypotheses tested/eliminated so far, reproduction info
-2. Write request to `.amag/reviews/debug-{timestamp}-request.md` using template in `.agent/resources/debug-escalation-template.md` (read it via `view_file`)
-3. Load `external-cli-runner` skill. Invoke with:
-   - **configPath**: `debug.consultant`
-   - **requestFile**: `.amag/reviews/debug-{timestamp}-request.md`
-   - **responseFileRaw**: `.amag/reviews/debug-{timestamp}-response-raw.md`
-   - **responseFile**: `.amag/reviews/debug-{timestamp}-response.md`
-   - **requiredField**: `## Recommendation`
-   - **fallbackAction**: "Skip external consultation — report findings to user"
-4. **If success**: present recommendation to user, then apply and re-attempt fix from Phase 5
-5. **If failure**: report to user with all context gathered so far
+| `/debug-escalate` | Immediately invoke external CLI — see [debug-escalate workflow](file:///debug-escalate.md) |
+| "consult external", "ask codex/claude", "get second opinion" | Same as `/debug-escalate` |
+| Any explicit request for external help | Same as `/debug-escalate` |
 
 ### Automatic Hypothesis-Level Escalation
 
-After **3 failed hypotheses** (3 root cause theories tested and eliminated):
+After **3 failed hypotheses**:
 
-1. **STOP** further investigation
-2. **Load `architecture-advisor` skill** — shift to read-only consulting mode
-3. **Document** eliminated hypotheses: `Hypothesis N: [claim] → ELIMINATED because [evidence]`
-4. In advisor mode: re-examine from a structural/architectural angle
-5. **If advisor cannot resolve** → attempt external CLI consultation (same procedure as User-Triggered Escalation above)
-   - **If success**: apply recommendation, re-attempt fix from Phase 5. If still fails → ASK USER
-   - **If failure** (CLI not found / 3 retries exhausted) → ASK USER
-6. **ASK USER** with full context — include eliminated hypotheses, advisor analysis, and CLI recommendation (if available)
+1. **STOP** — load `architecture-advisor` skill (read-only consulting)
+2. **Document**: `Hypothesis N: [claim] → ELIMINATED because [evidence]`
+3. Re-examine from structural/architectural angle
+4. **If advisor fails** → follow `/debug-escalate` procedure
+   - Success → apply recommendation, re-attempt from Phase 5. Still fails → ASK USER
+   - Failure → ASK USER
+5. **ASK USER** with full context: eliminated hypotheses, advisor analysis, CLI recommendation (if any)
 
 ### Command-Level Failures
 
-Builds, tests, or commands that fail/hang during debugging follow `error-recovery.md` — that protocol governs command-level failures. The debug workflow's hypothesis escalation is separate.
+Builds/tests/commands that fail during debugging → `error-recovery.md`. Separate from hypothesis escalation.
 
-## Quick Reference: Common Debugging Scenarios
+## Quick Reference
 
-**Test Failures**: Read FULL error + stack trace → identify which assertion failed (expected vs got) → check test setup/fixtures for staleness → trace unexpected value backward to source.
+**Test Failures**: Full error + stack trace → assertion check → fixture staleness → trace backward.
 
-**"It Worked Before"**: `git log -n 20` for recent changes → `git diff HEAD~5` in affected area → `git bisect` if breaking change isn't obvious → fix at the source of the assumption violation.
+**"It Worked Before"**: `git log -n 20` → `git diff HEAD~5` → `git bisect` if needed → fix assumption violation.
 
-**Intermittent Failures**: Look for race conditions (shared state across threads/async) → check timing dependencies → examine async ordering → look for unsynchronized shared mutable state → add deterministic waits or proper synchronization.
+**Intermittent**: Race conditions → timing dependencies → async ordering → shared mutable state → add synchronization.
