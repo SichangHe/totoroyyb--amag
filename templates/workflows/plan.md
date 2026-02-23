@@ -148,8 +148,6 @@ grep_search("verdict:", ".amag/reviews/{planId}-consultant-response.md")
 - **MINOR** → fix silently, note in plan
 - **AMBIGUOUS** → apply default, disclose in plan
 
-**Do not generate `implementation_plan.md` until all CRITICAL gaps are resolved.**
-
 ---
 
 ## Step 7: Generate Plan
@@ -158,16 +156,7 @@ grep_search("verdict:", ".amag/reviews/{planId}-consultant-response.md")
 > [!CAUTION]
 > **Template compliance is MANDATORY.** Read `.agent/resources/plan-template.md` via `view_file` NOW. The plan MUST follow that template's structure exactly. Deviating makes the plan invalid.
 
-Create `implementation_plan.md` artifact using the template structure. **Every section MUST be present:**
-
-1. `## TL;DR` — Goal, Deliverables, Effort, Parallel info, Critical path
-2. `## Requirements Summary` → Must Have + Must NOT Have (Guardrails)
-3. `## Test Strategy` — Infrastructure, automated tests, agent-executed QA
-4. `## Plan Consultant Summary` — Gaps resolved before generation
-5. `## Parallel Execution Waves` — Wave diagram with task tree
-6. `## Implementation Steps` — Per-task format: What to do, Must NOT do, Category/Skills/Wave, References (file:line), Acceptance Criteria (agent-executable), QA Scenarios (happy + failure with evidence paths)
-7. `## Final Verification Wave` — FV1 (scope fidelity), FV2 (code quality), FV3 (QA replay)
-8. `## Acceptance Criteria Summary` — All Must Have present, all Must NOT Have absent
+Create `implementation_plan.md` artifact using the template structure. Every section in the template MUST be present — the post-generation compliance check below verifies this.
 
 ### Post-Generation Compliance Check
 
@@ -216,7 +205,7 @@ Plan is ready. How would you like to proceed?
 ---
 
 ## Step 9: Wait for Approval
-<!-- task_boundary: TaskStatus="Step 9/10: Waiting for user approval" -->
+<!-- task_boundary: TaskStatus="Step 10/10: Waiting for user approval" -->
 
 Present plan via `notify_user` with `BlockedOnUser: true` and `ShouldAutoProceed: false`.
 
@@ -233,6 +222,11 @@ Present plan via `notify_user` with `BlockedOnUser: true` and `ShouldAutoProceed
 2. **Write `.amag/active-plan.md`** with YAML header (`plan_name`, `status: approved`, timestamps) and task checklist including FV1-FV3.
 
 3. Status is `approved` — transitions to `in-progress` when `/start-work` begins.
+
+4. **Archive remaining review files** (catch-all safety net):
+   ```
+   run_command: [ "$(ls -A .amag/reviews/ 2>/dev/null)" ] && mkdir -p .amag/archive/reviews/{planId} && mv .amag/reviews/* .amag/archive/reviews/{planId}/ || true
+   ```
 
 ---
 

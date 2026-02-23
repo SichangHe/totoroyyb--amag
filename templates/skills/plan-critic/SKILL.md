@@ -159,6 +159,10 @@ Read `.amag/reviews/{planId}-critic-response.md` via `view_file`.
 
 ### If APPROVE:
 - Log: "Plan critic: APPROVE — plan is ready"
+- Archive review files:
+  ```
+  run_command: mkdir -p .amag/archive/reviews/{planId} && mv .amag/reviews/{planId}-critic-* .amag/archive/reviews/{planId}/
+  ```
 - Proceed to plan approval / start-work
 
 ### If REVISE:
@@ -217,9 +221,3 @@ If APPROVE:
 - Executability: [All tasks have starting points]
 ```
 
-## Review Archive
-
-After plan is approved, archive review files:
-```
-run_command: mkdir -p .amag/archive/reviews/{planId} && mv .amag/reviews/{planId}-* .amag/archive/reviews/{planId}/
-```

@@ -31,6 +31,11 @@ Skip the automatic escalation chain and immediately consult an external agent fo
 
 5. **On failure**: report to user with all context gathered so far
 
+6. **Archive review files** after consultation completes (success or failure):
+   ```
+   run_command: mkdir -p .amag/archive/reviews && mv .amag/reviews/debug-{timestamp}-* .amag/archive/reviews/
+   ```
+
 ## Keyword Aliases
 
 These phrases are treated identically to `/debug-escalate`:
