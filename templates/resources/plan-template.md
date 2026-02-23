@@ -127,7 +127,7 @@ Wave FINAL (After all tasks — verification):
 
 > Runs AFTER all implementation tasks complete.
 
-- [ ] FV1. **Scope Fidelity** — activate `plan-critic` skill
+- [ ] FV1. **Scope Fidelity** — self-verify each plan task against actual changes
   For each task: read "What to do", compare against actual changes. Verify nothing was missed (partial delivery) and nothing was added beyond spec (scope creep). Check "Must NOT do" compliance.
   Output: `Tasks [N/N compliant] | Contamination [CLEAN/N issues] | VERDICT: APPROVE/REVISE/REJECT`
 

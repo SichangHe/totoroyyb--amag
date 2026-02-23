@@ -101,12 +101,10 @@ Return: YES/NO for test infrastructure with framework name and example test file
 Stop searching when:
 - You have enough context to proceed confidently
 - Same information appearing from 2+ independent sources
-- 2 rounds of search yielded no new useful data
+- 3 rounds of search yielded no new useful data
 - A direct answer was found
 
-**Cap at 2 rounds. Do NOT over-explore. Time is precious.**
-
-**When loaded alongside `deep-work`**: Use codebase-explorer's search patterns, but satisfy deep-work's minimum file count (5-10 files). If 2 search rounds aren't enough to reach the minimum, run a 3rd targeted round.
+**Cap at 3 rounds. Do NOT over-explore. Time is precious.**
 
 ## Synthesis Format
 

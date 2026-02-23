@@ -120,29 +120,27 @@ Quick scan before generating — cut scope inflation, premature abstraction, ove
 > ## Step 6: Pre-Generation Gap Review — HARD STOP
 > <!-- task_boundary: TaskStatus="Step 7/10: Running plan consultant (gap review)" -->
 >
-> **MANDATORY. NON-NEGOTIABLE. You MUST execute this step IN FULL before Step 7.**
-> If you skip this step, the plan is INVALID. There are NO exceptions.
-> Do NOT jump ahead to plan generation. Do NOT reason that "the interview was thorough enough."
-> The consultant review exists precisely because self-assessed thoroughness is unreliable.
+> **MANDATORY. NON-NEGOTIABLE. No exceptions.** Do NOT skip this step, jump to plan generation, or reason that "the interview was thorough enough." Self-assessed thoroughness is unreliable.
+>
+> **GATE**: Step 7 is BLOCKED until ALL three conditions pass:
+> 1. ✅ `.amag/reviews/{planId}-consultant-response.md` exists (verified via `run_command`)
+> 2. ✅ Response contains a `verdict:` line (verified via `grep_search`)
+> 3. ✅ All CRITICAL gaps resolved
+>
+> **If ANY condition fails → you CANNOT proceed. Period.**
 
 Load `plan-consultant` skill **NOW**. Read its SKILL.md and follow every step. The skill handles: gap analysis through six categories, writing review files to `.amag/reviews/`, and CLI delegation (via `external-cli-runner` skill) with automatic fallback to self-review.
 
 ### Mandatory Completion Gate
 
-After the skill completes, **verify both files exist**:
+After the skill completes, verify:
 
 ```
 run_command: test -f .amag/reviews/{planId}-consultant-request.md && test -f .amag/reviews/{planId}-consultant-response.md && echo "GATE PASS" || echo "GATE FAIL"
-```
-
-**If `GATE FAIL`**: Do NOT proceed. Re-run the consultant skill. If it fails again → fall back to self-review path explicitly.
-
-Then verify the response contains a verdict:
-```
 grep_search("verdict:", ".amag/reviews/{planId}-consultant-response.md")
 ```
 
-If no verdict → re-run or fall back to self-review.
+**If `GATE FAIL` or no verdict**: Re-run the consultant skill. If it fails again → fall back to self-review.
 
 **Handle gaps:**
 - **CRITICAL** → surface via `notify_user` → wait → re-run clearance → re-run gap review
@@ -151,48 +149,28 @@ If no verdict → re-run or fall back to self-review.
 
 **Do not generate `implementation_plan.md` until all CRITICAL gaps are resolved.**
 
-> [!IMPORTANT]
-> ### STOP-GATE ASSERTION
-> Before proceeding to Step 7, you MUST have:
-> 1. ✅ `.amag/reviews/{planId}-consultant-response.md` exists (verified via `run_command`)
-> 2. ✅ Response contains a `verdict:` line (verified via `grep_search`)
-> 3. ✅ All CRITICAL gaps resolved
->
-> **If ANY of these are false, you are NOT allowed to proceed. Period.**
-
 ---
 
 ## Step 7: Generate Plan
 <!-- task_boundary: TaskStatus="Step 8/10: Generating implementation plan" -->
 
-> [!WARNING]
-> **Pre-generation check**: Have you completed Step 6? If `.amag/reviews/{planId}-consultant-response.md` does not exist, STOP and go back to Step 6. Do not generate the plan without consultant review.
-
 > [!CAUTION]
-> **Template compliance is MANDATORY.** Read `.agent/resources/plan-template.md` via `view_file` NOW. The plan MUST follow that template's structure exactly — not a free-form document, not grouped by component, not a list of diffs. The template defines the sections, order, and per-task format. Deviating from it makes the plan invalid.
+> **Template compliance is MANDATORY.** Read `.agent/resources/plan-template.md` via `view_file` NOW. The plan MUST follow that template's structure exactly. Deviating makes the plan invalid.
 
-Create `implementation_plan.md` artifact using the template structure. Every section below MUST be present:
+Create `implementation_plan.md` artifact using the template structure. **Every section MUST be present:**
 
-### Mandatory Sections Checklist
-
-1. `## TL;DR` — Goal, Deliverables, Effort level, Parallel info, Critical path
-2. `## Requirements Summary` → `### Must Have` + `### Must NOT Have (Guardrails)`
+1. `## TL;DR` — Goal, Deliverables, Effort, Parallel info, Critical path
+2. `## Requirements Summary` → Must Have + Must NOT Have (Guardrails)
 3. `## Test Strategy` — Infrastructure, automated tests, agent-executed QA
 4. `## Plan Consultant Summary` — Gaps resolved before generation
 5. `## Parallel Execution Waves` — Wave diagram with task tree
-6. `## Implementation Steps` — Each task in this exact per-task format:
-   - `What to do` (ordered steps)
-   - `Must NOT do` (exclusions)
-   - `Category` + `Skills to load` + `Wave`
-   - `References` (exhaustive file:line citations)
-   - `Acceptance Criteria` (agent-executable commands only)
-   - `QA Scenarios` (happy path + failure case, with evidence paths)
+6. `## Implementation Steps` — Per-task format: What to do, Must NOT do, Category/Skills/Wave, References (file:line), Acceptance Criteria (agent-executable), QA Scenarios (happy + failure with evidence paths)
 7. `## Final Verification Wave` — FV1 (scope fidelity), FV2 (code quality), FV3 (QA replay)
 8. `## Acceptance Criteria Summary` — All Must Have present, all Must NOT Have absent
 
 ### Post-Generation Compliance Check
 
-After writing the plan, verify these sections exist:
+After writing the plan, verify all required sections exist:
 ```
 grep_search("## TL;DR", implementation_plan.md)
 grep_search("Must NOT Have", implementation_plan.md)
@@ -202,7 +180,7 @@ grep_search("## Implementation Steps", implementation_plan.md)
 grep_search("QA Scenarios", implementation_plan.md)
 grep_search("## Final Verification Wave", implementation_plan.md)
 ```
-**If any search returns zero matches → the plan is non-compliant. Fix it before proceeding.**
+**If any search returns zero matches → fix the plan before proceeding.**
 
 ### Plan Quality Standards
 
@@ -224,9 +202,9 @@ grep_search("## Final Verification Wave", implementation_plan.md)
 
 > "Plan is ready. How would you like to proceed?
 >
-> - **Option A — Start Work**: Plan looks solid, proceed with `/start-work`.
+> - **Option A — Proceed to Approval**: Plan looks solid, skip critic review.
 >
-> - **Option B — Critical Review Pass**: Activate `plan-critic` skill for independent review before starting work."
+> - **Option B — Critical Review Pass**: Activate `plan-critic` skill for independent review before approval."
 
 **If Option B**: Load `plan-critic` skill. It handles backend detection, spawns reviewer, writes to `.amag/reviews/`. Loop until APPROVE or user cancels. Archive reviews after final APPROVE.
 

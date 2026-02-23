@@ -180,7 +180,9 @@ For each gap found, classify it:
 - Fix/apply defaults silently
 - Proceed immediately to plan generation
 
-## Output Format
+## Output Format (for presenting results)
+
+After processing the consultant response, present this summary to the user via `notify_user` and include it in the plan's `## Plan Consultant Summary` section:
 
 ```
 ## Plan Consultant Analysis

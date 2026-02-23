@@ -96,7 +96,9 @@ After 3 consecutive failed attempts on the same issue (whether fix attempts, com
 
    Update `task_boundary`: `TaskStatus: "Escalation: consulting external debug agent..."`
 
-   **Write request** to `.amag/reviews/debug-{timestamp}-request.md` using this template:
+   **Write request** to `.amag/reviews/debug-{timestamp}-request.md` using the template below.
+
+   **Context**: Use this template for **command-level failure escalation** — builds, tests, or commands that keep failing. For hypothesis-level debugging escalation, use `.agent/resources/debug-escalation-template.md` instead.
 
    ```markdown
    # SYSTEM

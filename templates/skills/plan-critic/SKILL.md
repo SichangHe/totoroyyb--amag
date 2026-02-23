@@ -12,7 +12,6 @@ Derived from OMO's Momus agent (plan reviewer, approval bias, blocker-only focus
 ## When to Activate
 
 - `/plan` Step 8 (High-Accuracy Gate) — if user selects "Critical Review Pass"
-- `/start-work` Final Verification — scope fidelity and acceptance criteria check
 
 ## Step 1: Write Review Request
 

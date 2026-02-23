@@ -57,7 +57,7 @@ After initial exploration:
 3. Look at recent git history for context on recent changes
 4. Read config files for constraints and conventions
 
-**Cap at 2 rounds of diminishing returns — unless loaded alongside `codebase-explorer`, which may extend to a 3rd round to meet the 5-10 file minimum.**
+**Cap at 3 rounds of diminishing returns.**
 
 ## Code Quality in Deep Mode
 

@@ -17,19 +17,22 @@ Load `deep-work` skill for exploration methodology (parallel searches, trace cal
 Call `task_boundary` at **every phase transition** with:
 - **TaskName**: `"Debugging: {symptom}"`
 - **Mode**: `EXECUTION`
-- **TaskStatus**: Use the directive shown at each phase (e.g. `"Phase 2/5: Tracing root cause"`)
+- **TaskStatus**: Use the directive shown at each phase (e.g. `"Phase 2/6: Reproducing the bug"`)
 - **TaskSummary**: Cumulative — hypotheses formed/eliminated, evidence found
 
 ## How This Gets Engaged
 
 | Trigger | Entry Point |
 |---|---|
-| User says `/debug` explicitly | Phase 0 |
-| Intent gate classifies a bug as HARD (see `GEMINI.md` difficulty gate) | Phase 0 |
-| Transparent upgrade — inline fix failed, revealed deeper issue | Phase 1 (carry the failed attempt as eliminated hypothesis) |
+| User says `/debug` explicitly | Phase 1 |
+| Intent gate classifies a bug as HARD (see `GEMINI.md` difficulty gate) | Phase 1 |
+| Transparent upgrade — inline fix failed, revealed deeper issue | Phase 2 (carry failed attempt as eliminated hypothesis) |
+| User says "debug", "trace this bug", "find the root cause" | Phase 1 |
 
-## Phase 0 — Triage
-<!-- task_boundary: TaskStatus="Phase 1/5: Triaging bug type" -->
+**Do NOT use for**: typos/one-line fixes (just fix directly), build config issues (`error-recovery.md`), feature requests disguised as bugs.
+
+## Phase 1 — Triage
+<!-- task_boundary: TaskStatus="Phase 1/6: Triaging bug type" -->
 
 Classify the bug type. This determines your investigation strategy.
 
@@ -43,8 +46,8 @@ Classify the bug type. This determines your investigation strategy.
 
 **Output**: State the bug type and your investigation strategy before proceeding.
 
-## Phase 1 — Reproduce (NEVER SKIP)
-<!-- task_boundary: TaskStatus="Phase 2/5: Reproducing the bug" -->
+## Phase 2 — Reproduce (NEVER SKIP)
+<!-- task_boundary: TaskStatus="Phase 2/6: Reproducing the bug" -->
 
 **If you can't reproduce it, you can't verify a fix.**
 
@@ -58,22 +61,14 @@ Classify the bug type. This determines your investigation strategy.
 
 **Output**: A failing test or documented repro steps that reliably triggers the bug.
 
-## Phase 2 — Root Cause Investigation
-<!-- task_boundary: TaskStatus="Phase 3/5: Investigating root cause" -->
+## Phase 3 — Root Cause Investigation
+<!-- task_boundary: TaskStatus="Phase 3/6: Investigating root cause" -->
 
 This is where you use `deep-work` exploration methodology. Fire parallel searches, trace call chains, read broadly.
 
 ### Step 1: Trace from Symptom to Source
 
-Follow the **Root Cause Tracing** technique:
-
-```
-1. OBSERVE — Where does the error manifest? (file, line, function)
-2. IMMEDIATE CAUSE — Which code directly produces the wrong behavior?
-3. TRACE UPWARD — What called this code? What data did it pass?
-4. FOLLOW THE DATA — Where did the bad/unexpected value originate?
-5. FIND THE TRIGGER — What is the ORIGINAL source of the problem?
-```
+**Root Cause Tracing**: OBSERVE (where error manifests) → IMMEDIATE CAUSE (which code is wrong) → TRACE UPWARD (what called it, what data) → FOLLOW DATA (where bad value originated) → FIND TRIGGER (original source of problem).
 
 **Key principle**: Never fix where the error appears — trace to where it starts.
 
@@ -99,8 +94,8 @@ For each hypothesis:
 
 **Output**: The confirmed root cause with evidence. You must be able to explain WHY the bug exists, not just WHERE.
 
-## Phase 3 — Pattern Analysis
-<!-- task_boundary: TaskStatus="Phase 3/5: Analyzing patterns against working code" -->
+## Phase 4 — Pattern Analysis
+<!-- task_boundary: TaskStatus="Phase 4/6: Analyzing patterns against working code" -->
 
 Before fixing, verify your understanding by comparing against working code:
 
@@ -112,8 +107,8 @@ This step catches cases where the "root cause" is actually a symptom of a wrong 
 
 **Output**: Confirmation that pattern analysis supports the root cause, OR a revised hypothesis.
 
-## Phase 4 — Fix (Minimal & Surgical)
-<!-- task_boundary: TaskStatus="Phase 4/5: Applying surgical fix" -->
+## Phase 5 — Fix (Minimal & Surgical)
+<!-- task_boundary: TaskStatus="Phase 5/6: Applying surgical fix" -->
 
 1. **Implement a single fix** that addresses the root cause — not the symptom
 2. **Change ONE thing** — if your fix touches many files, question whether you're fixing the root cause or patching symptoms
@@ -129,8 +124,8 @@ This step catches cases where the "root cause" is actually a symptom of a wrong 
 - You're suppressing errors rather than fixing them
 - You can't explain WHY the fix works
 
-## Phase 5 — Verification & Hardening
-<!-- task_boundary: TaskStatus="Phase 5/5: Verifying fix and checking for systemic risk" -->
+## Phase 6 — Verification & Hardening
+<!-- task_boundary: TaskStatus="Phase 6/6: Verifying fix and checking for systemic risk" -->
 
 ### Verify the Fix
 
@@ -168,102 +163,30 @@ After **3 failed hypotheses** (3 root cause theories tested and eliminated):
 
 1. **STOP** further investigation
 2. **Load `architecture-advisor` skill** — shift to read-only consulting mode
-3. **Document** what was tested and eliminated:
-   ```
-   Hypothesis 1: [claim] → ELIMINATED because [evidence]
-   Hypothesis 2: [claim] → ELIMINATED because [evidence]
-   Hypothesis 3: [claim] → ELIMINATED because [evidence]
-   ```
-4. In advisor mode: re-examine the problem from a structural/architectural angle
-5. If `architecture-advisor` cannot resolve → **attempt external CLI consultation**:
-
-   Update `task_boundary`: `TaskStatus: "Escalation: consulting external debug agent..."`
-
-   **Write request** to `.amag/reviews/debug-{timestamp}-request.md` using this template:
-
-   ```markdown
-   # SYSTEM
-   You are a Debug Consultant. Read-only analysis. No code changes.
-   Provide one clear recommendation for the root cause.
-
-   ## Hard Constraints
-   - ANALYSIS ONLY — do NOT modify files or run commands
-   - Focus on ROOT CAUSE, not symptoms
-   - Cite specific files and line numbers in your analysis
-
-   ## Symptom
-   {describe the bug — what's happening vs what's expected}
-
-   ## Eliminated Hypotheses
-   {for each eliminated hypothesis: claim, evidence, why eliminated}
-
-   ## Relevant Code
-   {paste key code sections that were investigated}
-
-   ## Question
-   What is the root cause? Provide your analysis under ## Recommendation.
-
-   ## Response Format
-   ## Recommendation
-   [Your analysis and suggested root cause + fix approach]
-   ```
-
-   **Load `external-cli-runner` skill.** Invoke with:
-   - **configPath**: `debug.consultant`
-   - **requestFile**: `.amag/reviews/debug-{timestamp}-request.md`
-   - **responseFileRaw**: `.amag/reviews/debug-{timestamp}-response-raw.md`
-   - **responseFile**: `.amag/reviews/debug-{timestamp}-response.md`
-   - **requiredField**: `## Recommendation`
-   - **fallbackAction**: "Skip external consultation — proceed to ASK USER"
-
-   **If the runner returns success**: read the response, apply the recommendation, re-attempt the fix from Phase 4. If the fix still fails → proceed to step 6.
-
-   **If the runner returns failure** (CLI not found or 3 retries exhausted): skip to step 6.
-
-6. **ASK USER** with full context — include eliminated hypotheses, architecture-advisor analysis, and external CLI recommendation (if available)
+3. **Document** eliminated hypotheses: `Hypothesis N: [claim] → ELIMINATED because [evidence]`
+4. In advisor mode: re-examine from a structural/architectural angle
+5. **If advisor cannot resolve** → attempt external CLI consultation:
+   - Update `task_boundary`: `TaskStatus: "Escalation: consulting external debug agent..."`
+   - Write request to `.amag/reviews/debug-{timestamp}-request.md` using template in `.agent/resources/debug-escalation-template.md` (read it via `view_file`)
+   - **Load `external-cli-runner` skill.** Invoke with:
+     - **configPath**: `debug.consultant`
+     - **requestFile**: `.amag/reviews/debug-{timestamp}-request.md`
+     - **responseFileRaw**: `.amag/reviews/debug-{timestamp}-response-raw.md`
+     - **responseFile**: `.amag/reviews/debug-{timestamp}-response.md`
+     - **requiredField**: `## Recommendation`
+     - **fallbackAction**: "Skip external consultation — proceed to ASK USER"
+   - **If success**: apply recommendation, re-attempt fix from Phase 5. If still fails → ASK USER
+   - **If failure** (CLI not found / 3 retries exhausted) → ASK USER
+6. **ASK USER** with full context — include eliminated hypotheses, advisor analysis, and CLI recommendation (if available)
 
 ### Command-Level Failures
 
-If builds, tests, or commands fail/hang during debugging, follow `error-recovery.md` — that protocol governs command-level failures. The debug workflow's hypothesis escalation is separate from command-level escalation.
+Builds, tests, or commands that fail/hang during debugging follow `error-recovery.md` — that protocol governs command-level failures. The debug workflow's hypothesis escalation is separate.
 
-## Common Debugging Scenarios
+## Quick Reference: Common Debugging Scenarios
 
-### Test Failures
-```
-1. Read the FULL error message and stack trace
-2. Identify which assertion failed and what it expected vs got
-3. Check test setup — is the test environment configured correctly?
-4. Check test data — are mocks/fixtures stale or wrong?
-5. Trace the unexpected value backward to its source
-```
+**Test Failures**: Read FULL error + stack trace → identify which assertion failed (expected vs got) → check test setup/fixtures for staleness → trace unexpected value backward to source.
 
-### "It Worked Before"
-```
-1. git log -n 20 — what changed recently?
-2. git diff HEAD~5 — inspect recent changes in the affected area
-3. git bisect — if the breaking change isn't obvious, bisect to find it
-4. Compare the breaking commit's assumption vs current state
-5. Fix at the source of the assumption violation
-```
+**"It Worked Before"**: `git log -n 20` for recent changes → `git diff HEAD~5` in affected area → `git bisect` if breaking change isn't obvious → fix at the source of the assumption violation.
 
-### Intermittent Failures
-```
-1. Look for race conditions (shared state across threads/async)
-2. Check for timing dependencies (setTimeout, setInterval, network)
-3. Examine async operation ordering (Promise chains, event listeners)
-4. Look for shared mutable state that isn't synchronized
-5. Add deterministic waits or proper synchronization
-```
-
-## When to Use
-
-- User says "debug", "trace this bug", "find the root cause"
-- Auto-engaged by `GEMINI.md` difficulty gate when bug is classified as HARD
-- Transparent upgrade when an inline fix fails and reveals deeper complexity
-- Any time you need to understand WHY something is broken, not just make it work
-
-## When NOT to Use
-
-- Typos, obvious one-line fixes (just fix them directly)
-- Build configuration issues (follow `error-recovery.md` instead)
-- Feature requests disguised as bugs ("it doesn't do X" when X was never built)
+**Intermittent Failures**: Look for race conditions (shared state across threads/async) → check timing dependencies → examine async ordering → look for unsynchronized shared mutable state → add deterministic waits or proper synchronization.

@@ -27,7 +27,7 @@ Shift into read-only, high-reasoning consulting mode. When activated, stop imple
 
 **Loaded by:**
 - `/plan` Step 1 for Architecture intent
-- `/start-work` Final Verification Wave (for plan compliance audit)
+- Plan template FV2 (code quality review during `/start-work` final verification)
 - Default behavior after 2+ failed fix attempts
 - `/debug` Phase 4 hypothesis escalation (step before external CLI consultation)
 

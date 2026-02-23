@@ -57,7 +57,7 @@ Call `task_boundary` at **every major phase** with:
 
 ### Category-Aware Execution
 
-For each sub-task, classify and adopt the right mindset:
+For each sub-task, classify and adopt the right mindset. Load skills per GEMINI.md Task Categories: visual → `frontend-ui-ux`, deep → `deep-work`, writing → `writing`, git → `git-master`.
 
 | Category | Mindset |
 |---|---|

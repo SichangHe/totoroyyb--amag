@@ -13,7 +13,7 @@ Read an existing plan and execute it task-by-task with verification. This is the
 Call `task_boundary` at **every step transition** with:
 - **TaskName**: `"Executing: {plan name}"`
 - **Mode**: `EXECUTION` (switch to `VERIFICATION` at Step 5)
-- **TaskStatus**: Use the directive shown at each step. During Step 3, update per-task: `"Step 3/6: Task [N/total] — {task title}"`
+- **TaskStatus**: Use the directive shown at each step. During Step 3, update per-task: `"Step 3/5: Task [N/total] — {task title}"`
 - **TaskSummary**: Cumulative — tasks completed, issues found, learnings
 
 ## Steps
@@ -112,8 +112,7 @@ All three updates must happen together:
 
 **Never update one without the others.**
 
-### 4. Accumulate Learnings
-<!-- task_boundary: TaskStatus="Step 4/6: Recording learnings" -->
+#### g) Accumulate Learnings
 
 After each task, write key findings to `.amag/notepads/{plan-name}.md`. Append — never overwrite.
 
@@ -124,18 +123,16 @@ After each task, write key findings to `.amag/notepads/{plan-name}.md`. Append �
 - Decision: [trade-off made, alternative considered and rejected]
 ```
 
-**Before starting each subsequent task**: re-read this file and apply accumulated knowledge. This prevents repeating mistakes and ensures consistency across tasks — the same function OMO's notepad system serves for subagents.
+**Before starting each subsequent task**: re-read this file and apply accumulated knowledge. This prevents repeating mistakes and ensures consistency across tasks.
 
-### 5. Final Verification (NON-NEGOTIABLE — after ALL tasks)
-<!-- task_boundary: Mode=VERIFICATION, TaskStatus="Step 5/6: Running final verification" -->
+### 4. Final Verification (NON-NEGOTIABLE — after ALL tasks)
+<!-- task_boundary: Mode=VERIFICATION, TaskStatus="Step 4/5: Running final verification" -->
 
-This is not a formality. This is where you catch everything the per-task checks missed.
-
-Follow the full Verification Protocol from `GEMINI.md` (Steps 1-6) across ALL files modified during the entire plan, PLUS these plan-specific checks:
+Mandatory catch-all — runs GEMINI.md Verification Protocol (Steps 1-6) across ALL files modified during the entire plan, PLUS these plan-specific checks:
 
 #### a) Scope Fidelity — Plan vs Reality
 
-Activate `plan-critic` skill for this check.
+Self-verify each plan task against actual changes (you already know the plan):
 
 - For each task in the plan: verify it was implemented completely
 - Check: nothing was built that the plan didn't specify (scope creep)
@@ -147,15 +144,14 @@ If REVISE or REJECT: fix all flagged blocking issues before proceeding to step `
 
 #### b) Acceptance Criteria
 
-Activate `plan-critic` skill for this check.
-
 - Verify EVERY acceptance criterion from the plan with tool-produced evidence
 - Run QA scenarios from the plan: follow exact steps, capture evidence
 - No criterion passes on assertion alone — run the command, show the output
 - Output: `Criteria [N/N pass] | QA Scenarios [N/N pass] | Evidence [CAPTURED]`
 
-#### c) AI Slop Visual Check
-During the self-review (GEMINI.md Step 2), also check for AI slop patterns from `code-quality.md` Section 6 (generic names, over-abstraction, excessive comments, commented-out code). These require judgment — `grep_search` can't reliably detect them.
+#### c) Code Quality
+
+Activate `architecture-advisor` skill for review. Check all changed files for: `as any`/`@ts-ignore`, empty catches, `console.log` in production code, commented-out code, unused imports. Check AI slop per `code-quality.md` Section 6.
 
 #### d) Report
 - Summarize what was implemented, verified, and any issues encountered
@@ -163,19 +159,16 @@ During the self-review (GEMINI.md Step 2), also check for AI slop patterns from 
 
 #### e) Stuck During Verification
 
-If a build or test command hangs during this phase, follow the Long-Running Command Protocol from `error-recovery.md`:
+If a build or test command hangs, follow `error-recovery.md` Long-Running Command Protocol:
 
-1. **Apply poll discipline** — poll `command_status` at 60s intervals. If output hasn't grown for 2 consecutive polls, the command is hung.
-2. **Kill it** — call `send_command_input(CommandId, Terminate=true)`. Do not leave it running.
-3. **Mark the task blocked** — in `task.md` and `.amag/active-plan.md`, annotate the hung task as `[blocked]` (not complete, not failed).
-4. **Notify the user** via `notify_user` with:
-   - Which command hung and what it was verifying
-   - The last lines of partial output seen
-   - What was already verified before the hang
-5. **Do NOT mark the plan complete** while any task remains unverified due to a hang.
+1. **Poll at 30s intervals**. Zero output growth for 2 polls = hung.
+2. **Kill it** — `send_command_input(CommandId, Terminate=true)`.
+3. **Mark the task blocked** — annotate as `[blocked]` in `task.md` and `.amag/active-plan.md`.
+4. **Notify the user** via `notify_user` with hung command details and partial output.
+5. **Do NOT mark the plan complete** while any task remains unverified.
 
-### 6. Mark Plan Complete
-<!-- task_boundary: TaskStatus="Step 6/6: Marking plan complete" -->
+### 5. Mark Plan Complete
+<!-- task_boundary: TaskStatus="Step 5/5: Marking plan complete" -->
 
 1. Update `.amag/active-plan.md` YAML header: `status: completed`, `last_updated`
 2. Create `walkthrough.md` artifact summarizing what was implemented and verified

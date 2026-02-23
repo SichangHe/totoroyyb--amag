@@ -15,9 +15,12 @@ Read-only, multi-phase codebase understanding workflow. Explore architecture, tr
 |---|---|
 | User says `/explore` | Phase 1 |
 | Intent Gate classifies request as Explore (system-level understanding, unfamiliar codebase, multi-module architecture) | Phase 1 |
-| User says "walk me through", "help me understand the architecture of", "how does this system work" (multi-module scope) | Phase 1 |
+| User says "walk me through", "help me understand the architecture of", "how does this system work" | Phase 1 |
+| Unfamiliar codebase — first encounter, need architectural overview | Phase 1 |
 
-**Discriminator from Exploratory** (normal inline search):
+**Do NOT use for**: simple lookups answerable in 1-3 files (use Exploratory), implementation requests (`/plan`), single-module questions, generating persistent docs (`/init-deep`), debugging (`/debug`).
+
+**Discriminator from Exploratory**:
 - Can the question be answered by reading 1-3 files? → Exploratory (inline search, no workflow)
 - Does understanding require tracing across 3+ modules or building an architectural mental model? → `/explore`
 
@@ -186,21 +189,5 @@ Research is complete when:
 | Not This | Use Instead |
 |---|---|
 | Planning implementation | `/plan` |
-| Quick "where is X?" search | Exploratory (inline search, no workflow) |
 | Generating GEMINI.md documentation files | `/init-deep` |
 | Implementing changes based on findings | Normal request → Intent Gate |
-| Debugging a specific bug | `/debug` |
-
-## When to Use
-
-- User says "explore", "walk me through", "help me understand" (multi-module scope)
-- Auto-engaged by Intent Gate when the request requires system-level understanding
-- Unfamiliar codebase — first encounter, need architectural overview
-- Research reading — understanding design decisions before proposing changes
-
-## When NOT to Use
-
-- Simple lookup ("where is the auth middleware?") → Exploratory
-- Implementation requests → `/plan` + `/start-work`
-- Single-module questions answerable in 1-3 file reads → Exploratory
-- Generating persistent documentation → `/init-deep`
