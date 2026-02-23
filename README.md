@@ -7,16 +7,18 @@ Inspired by [oh-my-opencode](https://github.com/code-yeongyu/oh-my-opencode) —
 ## Quick Start
 
 ```bash
-# Clone and build
-git clone https://github.com/totoroyyb/amag.git
-cd amag && npm install && npm run build
-
-# Make the CLI available globally
-npm link
+npm install -g @totoroyyb/amag
 
 # Initialize in your project
 cd /path/to/your/project
 amag init
+```
+
+Or install from source:
+
+```bash
+git clone https://github.com/totoroyyb/amag.git
+cd amag && npm install && npm run build && npm link
 ```
 
 That's it. Your project now has a `GEMINI.md` root prompt, always-on rules, slash-command workflows, and on-demand skills.

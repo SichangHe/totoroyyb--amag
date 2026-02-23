@@ -1,8 +1,27 @@
 {
-  "name": "amag",
+  "name": "@totoroyyb/amag",
   "version": "0.1.0",
-  "description": "OmO-style agent orchestration for Antigravity — rules, workflows, skills, and a CLI to install them",
+  "description": "Agent orchestration for Antigravity — curated rules, workflows, and skills via a CLI",
   "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/totoroyyb/amag.git"
+  },
+  "homepage": "https://github.com/totoroyyb/amag",
+  "keywords": [
+    "antigravity",
+    "agent",
+    "orchestration",
+    "prompt-engineering",
+    "workflows",
+    "skills",
+    "cli"
+  ],
+  "files": [
+    "dist",
+    "templates"
+  ],
   "bin": {
     "amag": "./dist/index.js"
   },
