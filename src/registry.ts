@@ -61,7 +61,7 @@ export const COMPONENTS: Component[] = [
     {
         type: "workflow",
         name: "debug",
-        description: "/debug — Systematic 5-phase debugging: reproduce, hypothesize, instrument, root-cause, fix",
+        description: "/debug — Systematic 6-phase debugging: reproduce, hypothesize, instrument, root-cause, fix",
     },
     {
         type: "workflow",
@@ -118,7 +118,7 @@ export const COMPONENTS: Component[] = [
     {
         type: "skill",
         name: "plan-critic",
-        description: "Post-generation plan review — verify references, executability, and acceptance criteria before execution",
+        description: "Post-generation plan review — verify references, executability, and acceptance criteria before approval",
     },
     {
         type: "skill",
