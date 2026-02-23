@@ -1,88 +1,138 @@
 # AMAG
 
-OmO-style agent orchestration for [Antigravity](https://antigravity.google). Curated rules, workflows, and skills that transform Antigravity's AI agent into a disciplined engineering team.
+Agent orchestration for [Antigravity](https://antigravity.google). Curated rules, workflows, and skills that transform Antigravity's AI agent into a disciplined engineering partner.
 
-## What is this?
+Inspired by [oh-my-opencode](https://github.com/code-yeongyu/oh-my-opencode) — rebuilt from scratch for Antigravity's native tooling.
 
-AMAG brings the best ideas from [oh-my-opencode](https://github.com/code-yeongyu/oh-my-opencode) to Google Antigravity — without the overhead. No hooks, no multi-model routing, no platform-specific ceremony. Just high-quality prompt engineering that works natively with Antigravity's tools.
-
-## Install
+## Quick Start
 
 ```bash
-# Clone and install
-git clone https://github.com/your-org/amag.git
-cd amag
-npm install
-npm run build
+# Clone and build
+git clone https://github.com/totoroyyb/amag.git
+cd amag && npm install && npm run build
 
-# Install into any project
+# Make the CLI available globally
+npm link
+
+# Initialize in your project
 cd /path/to/your/project
-npx amag init
+amag init
 ```
 
-Or install individual components:
+That's it. Your project now has a `GEMINI.md` root prompt, always-on rules, slash-command workflows, and on-demand skills.
 
-```bash
-amag add rule code-quality
-amag add workflow ultrawork
-amag add skill git-master
-```
+## What You Get
 
-## What Gets Installed
+### Core System (`GEMINI.md`)
 
-### GEMINI.md (Root Context)
+The root prompt that orchestrates everything:
 
-The core system prompt — adapts the Sisyphus orchestrator pattern for Antigravity:
-- **Intent Gate**: Classifies every request before acting
-- **Codebase Assessment**: Evaluates project maturity before following patterns
-- **Parallel Execution**: Fires tool calls simultaneously by default
-- **Verification Protocol**: Evidence-based completion (not "should work")
+- **Intent Gate** — classifies every request before acting (trivial, explicit, exploratory, open-ended)
+- **True Intent Extraction** — understands what you *actually* want, not just what you typed
+- **Auto-Ultrawork** — maximum rigor is always on: full verification, zero scope reduction
+- **Codebase Assessment** — evaluates project maturity and adapts behavior accordingly
+- **Verification Protocol** — evidence-based completion with a 6-step checklist (spec compliance → build → tests → debug scan)
 
 ### Rules (Always-On)
 
-| Rule | Purpose |
-|------|---------|
-| `todo-enforcement` | Task tracking discipline — break down, track progress, never abandon |
-| `error-recovery` | Failure protocol — 3 failures → stop, revert, ask |
-| `code-quality` | Karpathy guidelines — think first, simplify, surgical changes |
+Loaded into every conversation automatically.
+
+| Rule | What it does |
+|------|-------------|
+| `code-quality` | Think-first coding, surgical changes, no AI slop |
+| `error-recovery` | 3-failure escalation, blind retry prevention, hung command detection |
+| `todo-enforcement` | Task breakdown, progress tracking, never abandon work |
+| `agentic-rules` | Session start checks, active plan detection, auto-resume guidance |
 
 ### Workflows (Slash Commands)
 
-| Command | Purpose |
-|---------|---------|
-| `/ultrawork` | Full autonomous parallel execution with verification loop |
-| `/plan` | Strategic planning interview — explore before asking |
-| `/init-deep` | Generate hierarchical GEMINI.md context files |
+Type the command to activate.
+
+| Command | What it does |
+|---------|-------------|
+| `/plan` | Planning interview with optional external consultant + critic review |
+| `/start-work` | Execute a plan task-by-task with category-aware delegation |
+| `/resume` | Cross-session resume from `.amag/active-plan.md` |
+| `/debug` | 6-phase systematic debugging with external agent escalation |
+| `/debug-escalate` | Immediately escalate to external CLI during an active `/debug` |
+| `/explore` | Read-only multi-phase codebase exploration and architecture synthesis |
+| `/ultrawork` | Maximum effort mode — 100% certainty before acting |
+| `/init-deep` | Generate hierarchical `GEMINI.md` context files across the codebase |
 
 ### Skills (On-Demand)
 
-| Skill | Purpose |
-|-------|---------|
-| `git-master` | Atomic commits, conventional format, rebasing |
-| `browser-testing` | Visual testing via Antigravity's browser_subagent |
-| `frontend-ui-ux` | Design-first UI development |
+Auto-loaded when relevant, or loaded explicitly by workflows.
 
-## CLI Commands
+| Skill | What it does |
+|-------|-------------|
+| `deep-work` | Autonomous exploration — read extensively, build mental model, act decisively |
+| `git-master` | Atomic commits, conventional format, rebasing, conflict resolution |
+| `browser-testing` | Visual testing via Antigravity's `browser_subagent` |
+| `frontend-ui-ux` | Design-first UI with bold aesthetics and responsive patterns |
+| `writing` | Anti-AI-slop technical writing — plain words, human tone |
+| `architecture-advisor` | Read-only design review with simplicity bias |
+| `codebase-explorer` | Structured parallel codebase research and cross-validation |
+| `external-researcher` | External library/API research — official docs and best practices |
+| `external-cli-runner` | Unified runner for Claude, Codex, and Gemini CLIs with retry logic |
+| `plan-consultant` | Pre-plan gap analysis — surface missing requirements before generation |
+| `plan-critic` | Post-plan adversarial review — verify references and executability |
+
+## Typical Workflow
+
+```
+You:   /plan add OAuth login with Google and GitHub
+Agent: [explores codebase → asks clarifying questions → drafts plan]
+       [runs plan through consultant + critic if configured]
+       → implementation_plan.md ready for review
+
+You:   /start-work
+Agent: [executes plan task-by-task: build → type-check → test after each]
+       → all tasks complete, verified with evidence
+
+You:   /resume                      # pick up where you left off in a new session
+
+You:   /debug login redirects fail on Safari
+Agent: [reproduce → hypothesize → instrument → root-cause → fix → verify]
+       [escalates to external CLI if stuck: /debug-escalate]
+
+You:   /explore how does the auth middleware chain work?
+Agent: [structural scan → module deep-dives → synthesizes architecture doc]
+       → read-only, never modifies code
+```
+
+## External Agent Integration
+
+AMAG can delegate to external CLI agents (Claude, Codex, Gemini) for plan review and debugging consultation. Configure via:
 
 ```bash
-amag init              # Install everything
-amag add <type> <name> # Install one component
-amag list              # Show available components
-amag doctor            # Check installation status
+amag config show                              # View current config
+amag config set review.consultant.cli claude   # Set plan consultant
+amag config set debug.consultant.cli codex     # Set debug consultant
+amag config set review.critic.thinking high    # Set thinking level
+amag config reset                              # Reset to defaults
+```
+
+Thinking levels: `max`, `high`, `medium`, `low`, `none`.
+
+## CLI Reference
+
+```bash
+amag init                    # Install all components
+amag update                  # Overwrite with latest templates
+amag add <type> <name>       # Install one component (rule, workflow, skill)
+amag remove <type> <name>    # Remove one component
+amag uninstall               # Remove all AMAG files
+amag list                    # Show available components
+amag doctor                  # Check installation status
+amag config show|set|reset   # Manage configuration
 ```
 
 ## Design Philosophy
 
 1. **System prompts are the product** — the CLI is just a delivery mechanism
-2. **Every template earns its place** — no bloat, no rarely-used features
-3. **Antigravity-native** — uses AG's actual tools (`grep_search`, `run_command`, `browser_subagent`), not abstractions
-4. **Borrowed from the best, adapted for reality** — Sisyphus orchestration without the multi-agent overhead
-
-## Reference
-
-Built on research from:
-- [oh-my-opencode](https://github.com/code-yeongyu/oh-my-opencode) — Sisyphus orchestrator, phased execution, intent gate
-- [oh-my-claudecode](https://github.com/Yeachan-Heo/oh-my-claudecode) — skill format patterns, template rules
+2. **Every template earns its place** — no bloat, curated for real engineering workflows
+3. **Antigravity-native** — built on AG's actual tools, not abstractions
+4. **Composable** — add only what you need, remove what you don't
 
 ## License
 
