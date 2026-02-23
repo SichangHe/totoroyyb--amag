@@ -101,17 +101,44 @@ Agent: [structural scan → module deep-dives → synthesizes architecture doc]
 
 ## External Agent Integration
 
-AMAG can delegate to external CLI agents (Claude, Codex, Gemini) for plan review and debugging consultation. Configure via:
+AMAG can delegate work to external CLI agents — Claude, Codex, or Gemini — to get a second opinion from a different model. This happens in two contexts:
+
+**Plan review** (`/plan` workflow):
+1. **Consultant** — before the plan is generated, an external agent analyzes your requirements for gaps, ambiguities, and missing edge cases
+2. **Critic** — after the plan is generated, a different external agent stress-tests it for executability, missing references, and unrealistic assumptions
+
+**Debug consultation** (`/debug` workflow):
+- When debugging stalls after multiple failed hypotheses, AMAG sends the full debug context to an external agent for fresh analysis
+- Trigger manually with `/debug-escalate` or let the workflow offer it at a natural checkpoint
+
+Each external call includes full project context, retry logic (up to 3 attempts), and a configurable thinking level that controls how deeply the external model reasons.
+
+### Configuration
 
 ```bash
 npx @totoroyyb/amag config show                              # View current config
 npx @totoroyyb/amag config set review.consultant.cli claude   # Set plan consultant
+npx @totoroyyb/amag config set review.critic.cli codex        # Set plan critic
 npx @totoroyyb/amag config set debug.consultant.cli codex     # Set debug consultant
 npx @totoroyyb/amag config set review.critic.thinking high    # Set thinking level
 npx @totoroyyb/amag config reset                              # Reset to defaults
 ```
 
 Thinking levels: `max`, `high`, `medium`, `low`, `none`.
+
+Configuration is stored in `.amag/config.json` in your project root. This file is created during `init` or `update` with sensible defaults. You can modify it via the CLI commands above or edit the JSON directly.
+
+### Prerequisites
+
+External agent features require the corresponding CLI tools to be installed and authenticated on your machine:
+
+| CLI | Install | Auth |
+|-----|---------|------|
+| [Claude CLI](https://docs.anthropic.com/en/docs/claude-cli) | `npm install -g @anthropic-ai/claude-code` | `claude login` |
+| [Codex CLI](https://github.com/openai/codex) | `npm install -g @openai/codex` | `codex login` |
+| [Gemini CLI](https://github.com/google-gemini/gemini-cli) | `npm install -g @anthropic-ai/gemini-cli` | `gemini login` |
+
+If no external CLI is configured or available, AMAG falls back to native single-agent review — everything still works, just without the multi-model perspective.
 
 ## CLI Reference
 
