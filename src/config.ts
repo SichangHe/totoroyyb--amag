@@ -4,7 +4,7 @@ import { resolveProjectDir, log } from "./utils.js";
 
 // --- Types ---
 
-export type ExternalCLI = "codex" | "claude" | "gemini-cli";
+export type ExternalCLI = "codex" | "claude" | "gemini";
 
 export type ThinkingLevel = "max" | "high" | "medium" | "low" | "none";
 

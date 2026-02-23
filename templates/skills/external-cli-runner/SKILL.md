@@ -5,7 +5,7 @@ description: Unified external CLI agent runner — backend detection, command di
 
 # External CLI Runner
 
-Reusable infrastructure for spawning external CLI agents (claude, codex, gemini-cli). Handles backend detection, command construction, thinking level mapping, retry-on-failure (up to 3 attempts), and response parsing.
+Reusable infrastructure for spawning external CLI agents (claude, codex, gemini). Handles backend detection, command construction, thinking level mapping, retry-on-failure (up to 3 attempts), and response parsing.
 
 **Any skill that needs to delegate work to an external CLI agent should load this skill** instead of implementing CLI invocation directly.
 
