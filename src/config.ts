@@ -40,7 +40,7 @@ const DEFAULT_CONFIG: AmagConfig = {
     },
     debug: {
         consultant: { cli: "codex", model: "gpt-5.2", thinking: "high" },
-        timeout_ms: 600000,
+        timeout_ms: 1200000,
     },
 };
 
