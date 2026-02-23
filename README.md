@@ -1,4 +1,4 @@
-# AMAG
+# AMAG: All Mighty AntiGravity
 
 Agent orchestration for [Antigravity](https://antigravity.google). Curated rules, workflows, and skills that transform Antigravity's AI agent into a disciplined engineering partner.
 
