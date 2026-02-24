@@ -4,18 +4,17 @@ description: Structured planning interview before implementation — plan before
 
 # /plan — Strategic Planning
 
-Classify complexity → explore codebase → detect tests → interview → clearance check → **consultant gap review (HARD STOP)** → generate plan → **critic prompt** → approval → persist.
+Classify complexity → explore → detect tests → interview → clearance → **gap review (HARD STOP)** → generate plan → **critic prompt** → approval → persist.
 
 > [!IMPORTANT]
-> **You are a planner. You do not implement.** Every request means "create a work plan". You only write `implementation_plan.md` and optionally `.amag/drafts/*.md`. The plan-approve-execute gate is **never bypassed** — this workflow never executes. If a `research-findings.md` artifact exists (from a prior `/explore`), read it as pre-existing context.
+> **You are a planner. You do not implement.** Every request means "create a work plan". You only write `implementation_plan.md` and optionally `.amag/drafts/*.md`. The plan-approve-execute gate is **never bypassed**. If a `research-findings.md` artifact exists (from a prior `/explore`), read it as context.
+
+> [!WARNING]
+> **Steps 0→10 must execute IN ORDER.** Do NOT jump to plan generation after research. Step 4 writes a checkpoint file that Step 7 verifies — skipping blocks plan generation.
 
 ## Progress Tracking
 
-Call `task_boundary` at **every step transition** with:
-- **TaskName**: `"Planning: {feature}"`
-- **Mode**: `PLANNING`
-- **TaskStatus**: Use the directive shown at each step (e.g. `"Step 2/10: Exploring codebase"`)
-- **TaskSummary**: Cumulative — what has been decided/discovered so far
+Call `task_boundary` at **every step transition**: TaskName=`"Planning: {feature}"`, Mode=`PLANNING`, TaskStatus per step directive, TaskSummary cumulative.
 
 ---
 
@@ -24,20 +23,20 @@ Call `task_boundary` at **every step transition** with:
 
 | Level | Signal | Action |
 |---|---|---|
-| **Trivial** | Single file, <10 lines | Quick confirm + propose. Skip heavy interview |
-| **Simple** | 1-2 files, clear scope | 1-2 targeted questions → propose → generate |
+| **Trivial** | Single file, <10 lines | Quick confirm + propose |
+| **Simple** | 1-2 files, clear scope | 1-2 targeted questions → generate |
 | **Complex** | 3+ files, architectural impact | Full interview loop |
 
 State: *"This is [trivial/simple/complex] because [reason]."*
 
 ### Complexity-Dependent Step Skips
 
-Trivial and Simple tasks may skip heavy steps. **When skipping, you MUST announce the skip** via `notify_user` using this template:
+Trivial/Simple may skip heavy steps. **Announce skips** via `notify_user`:
 
 > ℹ️ **Skipped: {step name}** — Task classified as {trivial/simple} because {reason}.
 > You can still run this step manually: say **"run gap analysis"** or **"run critic review"**.
 
-Set `ShouldAutoProceed: true` for trivial skips, `ShouldAutoProceed: false` for simple skips (give user a moment to override).
+`ShouldAutoProceed`: `true` for trivial, `false` for simple.
 
 | Step | Trivial | Simple | Complex |
 |------|---------|--------|---------|
@@ -52,70 +51,56 @@ Set `ShouldAutoProceed: true` for trivial skips, `ShouldAutoProceed: false` for 
 ## Step 1: Intent Classification + Research
 <!-- task_boundary: TaskStatus="Step 2/10: Classifying intent and exploring codebase" -->
 
-**Never ask the user about things you can look up.** Load `codebase-explorer` skill.
-
-Classify: *"I classify this as [TYPE] because [reason]."*
-
-Launch **parallel searches** based on type:
+**Never ask users things you can look up.** Load `codebase-explorer` skill. Classify: *"I classify this as [TYPE] because [reason]."*
 
 | Intent | Skills to Load | What to Find |
 |---|---|---|
-| **Refactoring** | `codebase-explorer` | All call sites, test coverage, risk per site |
-| **Build from Scratch** | `codebase-explorer` + `external-researcher` | Directory conventions, naming, wiring steps, external patterns |
-| **Mid-Sized Task** | — | Verify exact files exist, understand current state |
-| **Collaborative** | — | Light exploration as user provides direction |
-| **Architecture** | `codebase-explorer` + `external-researcher` + `architecture-advisor` | Module boundaries, dependency graph, coupling hotspots |
-| **Research** | `codebase-explorer` + `external-researcher` | What exists + external guidance + OSS examples |
+| **Refactoring** | `codebase-explorer` | Call sites, test coverage, risk |
+| **Build from Scratch** | `codebase-explorer` + `external-researcher` | Conventions, naming, wiring, external patterns |
+| **Mid-Sized Task** | — | Verify files exist, current state |
+| **Collaborative** | — | Light exploration per user direction |
+| **Architecture** | `codebase-explorer` + `external-researcher` + `architecture-advisor` | Boundaries, dependencies, coupling |
+| **Research** | `codebase-explorer` + `external-researcher` | What exists + external guidance |
 
 ---
 
 ## Step 2: Test Infrastructure Detection
 <!-- task_boundary: TaskStatus="Step 3/10: Detecting test infrastructure" -->
 
-**MANDATORY for Build from Scratch and Refactoring intents — before interviewing.**
+**MANDATORY for Build from Scratch and Refactoring — before interviewing.**
 
-Search for test config files (`jest.config*`, `vitest.config*`, `*.test.*`, `*.spec.*`, `package.json` test scripts).
+Search for test configs (`jest.config*`, `vitest.config*`, `*.test.*`, `*.spec.*`, test scripts).
 
-**If tests exist**: Ask: **TDD** (red→green→refactor), **Tests after**, or **No tests**. Note: agent-executable QA scenarios are always present regardless.
+- **Tests exist**: Ask: **TDD**, **Tests after**, or **No tests** (QA scenarios always present regardless)
+- **No tests**: Ask whether to set up test infra in this plan
 
-**If no tests**: Ask whether to set up test infrastructure as part of this plan.
-
-Record the decision — it affects the entire plan structure.
+Record the decision — it shapes the plan structure.
 
 ---
 
 ## Step 3: Interview (ONE question at a time)
 <!-- task_boundary: TaskStatus="Step 4/10: Interviewing — [N] requirements confirmed" -->
 
-Ask via `notify_user`. One question per turn — each answer informs the next.
-
-> [!TIP]
-> **Formatting**: Each option as a separate list item (`-`), blank line between options, bold label + description after colon.
-
-**`notify_user` strategy**: Trivial/Simple → `ShouldAutoProceed: true`. Complex → `ShouldAutoProceed: false`.
+Ask via `notify_user`. One question per turn. Format options per GEMINI.md User-Facing Output Formatting (blank lines between options, bold labels). `ShouldAutoProceed`: trivial/simple=`true`, complex=`false`.
 
 **Ask about**: Preferences, priorities, scope decisions, constraints.
 **Never ask about**: Codebase facts (look them up), implementation details (your job).
 
-**For complex tasks (3+ turns)**: Write decisions to `.amag/drafts/{topic}.md`. Update after each response. Include path in next `notify_user` call. Delete after plan is persisted.
+**Complex tasks (3+ turns)**: Write decisions to `.amag/drafts/{topic}.md`. Include path in next `notify_user`. Delete after plan persisted.
 
 ---
 
 ## Step 4: Self-Clearance Check
 <!-- task_boundary: TaskStatus="Step 5/10: Running self-clearance check" -->
 
-**Run after EVERY interview turn.** Check these internally — do NOT present the raw checklist to the user:
+**Run after EVERY interview turn.** Check internally — do NOT present to user:
 
-1. Core objective clearly defined?
-2. Scope boundaries — IN and OUT?
-3. No critical ambiguities?
-4. Technical approach decided?
-5. Test strategy confirmed?
-6. No blocking questions?
+1. Core objective defined? 2. Scope boundaries set? 3. No ambiguities? 4. Technical approach decided? 5. Test strategy confirmed? 6. No blocking questions?
 
-**ALL YES** → announce:
-
-> **✅ All requirements clear.** Proceeding to gap review and plan generation.
+**ALL YES** → announce: **"✅ All requirements clear."** Then write checkpoint:
+```
+run_command: mkdir -p .amag/plan-checkpoints && echo "CLEARANCE_PASS" > .amag/plan-checkpoints/clearance.done
+```
 
 **ANY NO** → ask the specific unclear question.
 
@@ -124,135 +109,106 @@ Ask via `notify_user`. One question per turn — each answer informs the next.
 ## Step 5: AI-Slop Prevention
 <!-- task_boundary: TaskStatus="Step 6/10: AI-slop prevention scan" -->
 
-Quick scan before generating — cut scope inflation, premature abstraction, over-validation, documentation bloat, and feature creep. Only include what was explicitly requested.
+Quick scan — cut scope inflation, premature abstraction, over-validation, documentation bloat, feature creep. Only include what was explicitly requested.
 
 ---
 
 ## Step 6: Pre-Generation Gap Review
 <!-- task_boundary: TaskStatus="Step 7/10: Running plan consultant (gap review)" -->
 
-**Trivial/Simple tasks**: Announce the skip via `notify_user` (use skip template from Step 0). Set `ShouldAutoProceed: true` (trivial) / `false` (simple). Note in plan: `## Plan Consultant Summary: Skipped — task classified as [trivial/simple]`. Then proceed to Step 7.
+**Trivial/Simple**: Announce skip (template from Step 0). Note in plan: `## Plan Consultant Summary: Skipped — [trivial/simple]`. Proceed to Step 7.
 
-**Complex tasks**: The HARD STOP below applies — no exceptions.
+**Complex**: HARD STOP below — no exceptions.
 
 > [!CAUTION]
-> ### Complex Tasks Only — HARD STOP
+> ### HARD STOP — Complex Tasks Only
 >
-> **MANDATORY. NON-NEGOTIABLE. No exceptions.** Do NOT skip this step, jump to plan generation, or reason that "the interview was thorough enough." Self-assessed thoroughness is unreliable.
+> **GATE** — Step 7 BLOCKED until ALL pass:
+> 1. `.amag/reviews/{planId}-consultant-response.md` exists
+> 2. Response contains `verdict:` line
+> 3. All CRITICAL gaps resolved
+> 4. `.amag/reviews/{planId}-consultant-cli-attempts.log` exists
 >
-> **GATE**: Step 7 (Generate Plan) is BLOCKED until ALL four conditions pass:
-> 1. ✅ `.amag/reviews/{planId}-consultant-response.md` exists (verified via `run_command`)
-> 2. ✅ Response contains a `verdict:` line (verified via `grep_search`)
-> 3. ✅ All CRITICAL gaps resolved
-> 4. ✅ `.amag/reviews/{planId}-consultant-cli-attempts.log` exists (CLI was attempted)
->
-> **If ANY condition fails → you CANNOT proceed. Period.**
+> **ANY fail → CANNOT proceed.**
 
-Load `plan-consultant` skill **NOW**. Follow every step. It handles gap analysis, writes to `.amag/reviews/`, delegates via `external-cli-runner` with fallback to self-review.
+Load `plan-consultant` skill NOW. It handles gap analysis via `external-cli-runner` with self-review fallback.
 
-**After skill completes**, verify GATE PASS:
+**Verify GATE PASS**:
 ```
 test -f .amag/reviews/{planId}-consultant-response.md && test -f .amag/reviews/{planId}-consultant-cli-attempts.log && grep verdict: .amag/reviews/{planId}-consultant-response.md && echo GATE PASS || echo GATE FAIL
 ```
-**If `GATE FAIL`**: Re-run consultant skill. Still fails → self-review fallback.
+`GATE FAIL` → re-run consultant. Still fails → self-review fallback.
 
-**Handle gaps:** CRITICAL → `notify_user` → wait → re-run clearance + gap review. MINOR → fix silently, note in plan. AMBIGUOUS → apply default, disclose.
+**Gaps**: CRITICAL → `notify_user` → wait → re-run. MINOR → fix silently. AMBIGUOUS → apply default, disclose.
 
 ---
 
 ## Step 7: Generate Plan
 <!-- task_boundary: TaskStatus="Step 8/10: Generating implementation plan" -->
 
+### Readiness Gate (MANDATORY)
+
+```
+test -f .amag/plan-checkpoints/clearance.done && echo "GATE: CLEARANCE OK" || echo "GATE: BLOCKED — Go back to Step 3."
+```
+**If BLOCKED → return to earliest skipped step.**
+
 > [!CAUTION]
-> **Template compliance is MANDATORY.** Read `.agent/resources/plan-template.md` via `view_file` NOW. The plan MUST follow that template's structure exactly. Deviating makes the plan invalid.
+> **Read `.agent/resources/plan-template.md` NOW.** The plan MUST follow that template exactly.
 
-Create `implementation_plan.md` artifact using the template structure. Every section in the template MUST be present — the post-generation compliance check below verifies this.
+Create `implementation_plan.md` using the template. All template sections MUST be present.
 
-### Post-Generation Compliance Check
+### Post-Generation Checks
 
-After writing the plan, verify all required sections exist:
-```
-grep_search("## TL;DR", implementation_plan.md)
-grep_search("Must NOT Have", implementation_plan.md)
-grep_search("## Test Strategy", implementation_plan.md)
-grep_search("## Plan Consultant Summary", implementation_plan.md)
-grep_search("## Implementation Steps", implementation_plan.md)
-grep_search("QA Scenarios", implementation_plan.md)
-grep_search("## Final Verification Wave", implementation_plan.md)
-```
-**If any search returns zero matches → fix the plan before proceeding.**
-
-### Plan Quality Standards
-
-| Standard | Requirement |
-|---|---|
-| Task count | 3-8 per wave; final wave always present |
-| QA scenarios | 1 happy path + 1 failure case per task minimum |
-| Acceptance criteria | Agent-executable commands only (no human checks) |
-| File references | Specific `file:line` citations discovered in exploration |
-| No vague terms | "fast" → "p99 < 200ms"; "clean" → "follows patterns in `src/utils/`" |
-| Scope guardrails | At least 2-3 explicit "Must NOT Have" items |
+Read `.agent/resources/plan-generation-checks.md` via `view_file` and run all three checks in order. Fix issues before proceeding. If CRITICAL gaps found → surface them in Step 8's `notify_user` alongside the A/B options.
 
 ---
 
 ## Step 8: High-Accuracy Gate
 <!-- task_boundary: TaskStatus="Step 9/10: Presenting plan for review" -->
 
-**Trivial/Simple tasks**: Auto-select Option A (no critic). Announce via `notify_user` (skip template from Step 0, combined with the Step 9 approval message to avoid an extra round-trip). Then proceed to Step 9.
+**Trivial/Simple**: Auto-select Option A. Combine with Step 9 approval message. Proceed to Step 9.
 
-**Complex tasks**: The MANDATORY prompt below applies — no exceptions.
-
-**MANDATORY prompt (complex only).** Present this choice to the user via `notify_user`. Do NOT skip or auto-select an option.
-
-Present exactly this (with blank lines between options for readability):
+**Complex** — present via `notify_user`:
 
 ```
 Plan is ready. How would you like to proceed?
 
-- **Option A — Proceed to Approval**: Plan looks solid, skip critic review.
+- **Option A — Proceed to Approval**: Skip critic review.
 
-- **Option B — Critical Review Pass**: Activate `plan-critic` skill for independent review before approval.
+- **Option B — Critical Review Pass**: Activate `plan-critic` for independent review.
 ```
 
-**If Option B**: Load `plan-critic` skill. It handles backend detection, spawns reviewer, writes to `.amag/reviews/`. Loop until APPROVE or user cancels. Archive reviews after final APPROVE.
+**Option B**: Load `plan-critic` skill. Loop until APPROVE or user cancels.
 
 ---
 
 ## Step 9: Wait for Approval
 <!-- task_boundary: TaskStatus="Step 9/10: Waiting for user approval" -->
 
-Present plan via `notify_user` with `BlockedOnUser: true` and `ShouldAutoProceed: false`. The message MUST include:
+Present plan via `notify_user` (`BlockedOnUser: true`, `ShouldAutoProceed: false`). MUST include:
 
-> ⚠️ Approving this plan does **NOT** start implementation.
-> Type `/start-work` to begin execution.
-
-**Never implement before explicit user approval. Approval means the plan is accepted, not "start building."**
+> ⚠️ Approving this plan does **NOT** start implementation. Type `/start-work` to begin.
 
 ---
 
 ## Step 10: Persist Plan (After Approval ONLY)
 <!-- task_boundary: TaskStatus="Step 10/10: Persisting approved plan" -->
 
-1. **Check for existing plan**: Read `.amag/active-plan.md`
-   - If exists with unchecked tasks → ask user: Archive and start new, or Resume?
-
-2. **Write `.amag/active-plan.md`** with YAML header (`plan_name`, `status: approved`, timestamps) and task checklist including FV1-FV3.
-
-3. Status is `approved` — transitions to `in-progress` when `/start-work` begins.
-
-4. **Archive remaining review files** (catch-all safety net):
+1. **Check `.amag/active-plan.md`** — if exists with unchecked tasks → ask: Archive or Resume?
+2. **Write `.amag/active-plan.md`** with YAML header (`plan_name`, `status: approved`, timestamps) and task checklist. **MUST include FV1-FV3** (Final Verification Wave tasks from the plan template) — they are NOT optional.
+3. **Archive reviews**:
    ```
    run_command: [ "$(ls -A .amag/reviews/ 2>/dev/null)" ] && mkdir -p .amag/archive/reviews/{planId} && mv .amag/reviews/* .amag/archive/reviews/{planId}/ || true
    ```
+4. **Clean up checkpoints**: `run_command: rm -rf .amag/plan-checkpoints/`
 
 ---
 
 ## STOP — Workflow Ends Here
 
-**The `/plan` workflow terminates after Step 10.** Do NOT proceed to implementation.
-
-Inform the user:
+**Do NOT implement.** Inform the user:
 
 > **📋 Plan saved.** Use `/start-work` to begin execution.
 
-**Under no circumstances**: start implementing, edit source files, transition to EXECUTION mode, or interpret "Proceed" / "Go ahead" / approval as a command to execute. Only an explicit `/start-work` invocation triggers implementation.
+**Under no circumstances**: start implementing, edit source files, transition to EXECUTION mode, or interpret "Proceed"/"Go ahead" as a command to execute. Only `/start-work` triggers implementation.

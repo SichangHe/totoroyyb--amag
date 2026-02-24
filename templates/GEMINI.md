@@ -51,7 +51,7 @@ Every user message has a surface form and a true intent. Extract the true intent
 
 **Explore exception**: When `/explore` is active (auto-engaged or explicit), the True Intent for understanding questions is **Understand → Synthesize**, never Implement/Fix. The user is studying the codebase, not requesting changes. `/explore` NEVER writes code, creates files, or modifies the project — it is strictly read-only unless the user gives an explicit instruction to write.
 
-**EXCEPTION: Explicit workflow invocations** (`/plan`, `/start-work`, `/resume`, `/ultrawork`, `/debug`, `/debug-escalate`, `/explore`, `/init-deep`) override True Intent Extraction. When a user invokes a workflow, follow that workflow's steps exactly — do not reinterpret the intent.
+**EXCEPTION: Explicit workflow invocations** (`/plan`, `/start-work`, `/resume`, `/ultrawork`, `/debug`, `/explore`, `/init-deep`) override True Intent Extraction. When a user invokes a workflow, follow that workflow's steps exactly — do not reinterpret the intent.
 
 ### Debugging Difficulty Gate
 
@@ -159,10 +159,10 @@ WRONG: Sequential when parallel is possible
 | External docs / OSS search | `external-researcher` skill | Official docs + production examples — load for unfamiliar libraries |
 | Run external CLI agents | `external-cli-runner` skill | Backend detection, command dispatch, 3-retry logic — load when delegating to claude/codex/gemini |
 | Architecture decisions / hard debugging | `architecture-advisor` skill | Read-only consulting mode — load after 2+ failed attempts or for system design |
-| Systematic debugging | `/debug` workflow | 6-phase root cause analysis with user-triggered escalation — auto-engaged for hard bugs, or invoked explicitly |
+| Systematic debugging | `/debug` workflow | 6-phase root cause analysis — auto-engaged for hard bugs, or invoked explicitly |
 | Large-scale codebase understanding | `/explore` workflow | Multi-phase read-only exploration — auto-engaged for system-level understanding or explicit `/explore`. Never writes code |
 | Pre-plan gap analysis | `plan-consultant` skill | Find missing requirements before generating a plan — `/plan` Step 6 |
-| Post-plan validation | `plan-critic` skill | Adversarial plan check — `/plan` Step 8 and `/start-work` final verification |
+| Post-plan validation | `plan-critic` skill | Adversarial plan check — `/plan` Step 8 |
 
 ### Long-Running Command Guidance
 
@@ -186,7 +186,7 @@ When investigating unfamiliar code, launch 3+ parallel searches from different a
 2. `find_by_name` for file patterns (by name, extension, type)
 3. `view_file_outline` for structure of key files
 
-Cross-validate findings. Cap at 2 rounds of diminishing returns — don't over-explore.
+Cross-validate findings. Cap at 3 rounds of diminishing returns — don't over-explore.
 
 ### External Research Protocol
 
@@ -373,19 +373,6 @@ When facing architecture decisions, debugging hard problems, or reviewing existi
 - **Match the user's style.** Terse user → terse responses.
 - **Challenge flawed designs.** State concern, propose alternative, ask if they want to proceed.
 - **Report progress proactively.** At meaningful milestones, include concrete outcomes.
-
-### User-Facing Output Formatting
-
-When presenting structured information to the user (via `notify_user`, inline responses, or any multi-section output):
-
-- **Blank line between every distinct block.** Never stack a header directly against content from the previous section.
-- **Use `---` between major sections** in longer messages (3+ logical blocks).
-- **Use headers** (`##`, `###`) to label sections in multi-part responses — not just bold text.
-- **Use bullet lists** instead of inline comma-separated items when presenting 3+ things.
-- **Options on separate lines** with a blank line between each option. Never cram choices onto one line.
-- **Wrap mode announcements** in a blockquote with an emoji for visual emphasis:
-  `> **🔍 MODE NAME**`
-- **Never dump raw checklists** (e.g., `□ item`) — summarize the result in plain language.
 
 ## Hard Constraints
 

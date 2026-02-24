@@ -161,7 +161,7 @@ Activate `architecture-advisor` skill for review. Check all changed files for: `
 
 If a build or test command hangs, follow `error-recovery.md` Long-Running Command Protocol:
 
-1. **Poll at 30s intervals**. Zero output growth for 2 polls = hung.
+1. **Poll at 60s intervals**. Zero output growth for 2 polls = hung.
 2. **Kill it** — `send_command_input(CommandId, Terminate=true)`.
 3. **Mark the task blocked** — annotate as `[blocked]` in `task.md` and `.amag/active-plan.md`.
 4. **Notify the user** via `notify_user` with hung command details and partial output.

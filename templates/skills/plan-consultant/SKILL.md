@@ -216,9 +216,4 @@ After processing the consultant response, present this summary to the user via `
 **No gaps found** ← If all clear
 ```
 
-## Review Archive
 
-After all gaps are resolved (after Step 4 completes), archive consultant review files. This runs before plan generation in plan.md Step 7:
-```
-run_command: mkdir -p .amag/archive/reviews/{planId} && mv .amag/reviews/{planId}-consultant-* .amag/archive/reviews/{planId}/
-```

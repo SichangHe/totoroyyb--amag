@@ -100,7 +100,7 @@ run_command: cat {requestFile} | gemini -m {model} --yolo > {responseFileRaw} 2>
 
 ### Execution Protocol
 
-Set `WaitMsBeforeAsync: 500` to run async. Poll via `command_status` at 30s intervals.
+Set `WaitMsBeforeAsync: 500` to run async. Poll via `command_status` at 60s intervals.
 
 > [!IMPORTANT]
 > **External CLI agents are NOT development commands.** They legitimately produce zero
@@ -112,7 +112,7 @@ Set `WaitMsBeforeAsync: 500` to run async. Poll via `command_status` at 30s inte
 
 1. **Read the timeout** from config: parse `configPath` to get the parent section (e.g. `debug` from `debug.consultant`), then read `{parent}.timeout_ms` from `.amag/config.json`. Convert to minutes. If not set, default to **10 minutes**.
 2. **Record the start time** when the command is dispatched.
-3. **Poll at 30s intervals** via `command_status(WaitDurationSeconds: 30)`.
+3. **Poll at 60s intervals** via `command_status(WaitDurationSeconds: 60)`.
 4. **On each poll**, check:
    - If the command has **completed** (status = done) → proceed to Step 3 (Error Detection).
    - If the command is **still running**, check elapsed wall-clock time:
