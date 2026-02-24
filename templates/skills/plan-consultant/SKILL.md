@@ -126,6 +126,7 @@ Load `external-cli-runner` skill. Invoke with:
 - **responseFileRaw**: `.amag/reviews/{planId}-consultant-response-raw.md`
 - **responseFile**: `.amag/reviews/{planId}-consultant-response.md`
 - **requiredField**: `verdict:`
+- **attemptLog**: `.amag/reviews/{planId}-consultant-cli-attempts.log`
 - **fallbackAction**: "Proceed to Step 3 (Self-Review Path)"
 
 If the runner returns **success** → skip Step 3, proceed to **Step 4: Act on Verdict**.
@@ -134,6 +135,13 @@ If the runner returns **failure** (CLI not found, or 3 retries exhausted) → pr
 ## Step 3: Self-Review Path (Fallback)
 
 When no CLI is available or CLI execution failed after retries.
+
+> [!CAUTION]
+> **PRECONDITION — CLI must have been attempted.** Self-review is ONLY permitted when CLI attempt evidence exists. Verify:
+> ```
+> run_command: test -f .amag/reviews/{planId}-consultant-cli-attempts.log && echo "FALLBACK AUTHORIZED" || echo "FALLBACK BLOCKED"
+> ```
+> If `FALLBACK BLOCKED` → you skipped Step 2. **Go back to Step 2 NOW.** Do not proceed.
 
 ### 1. Write Review Request
 
@@ -189,29 +197,20 @@ After processing the consultant response, present this summary to the user via `
 
 **Backend**: [cli: claude | self-review]
 
----
-
-### CRITICAL Gaps (need user input before generating plan)
-
+**CRITICAL gaps (need user input before generating plan):**
 - [Gap description]: [Specific question to ask]
 
-### MINOR Gaps (self-resolved)
-
+**MINOR gaps (self-resolved):**
 - [Gap]: [How resolved]
 
-### AMBIGUOUS Gaps (defaults applied)
-
+**AMBIGUOUS gaps (defaults applied):**
 - [Gap]: [Default chosen, override if needed]
 
----
-
-### Directives for Planner
-
+**Directives for Planner:**
 - MUST: [required action]
 - MUST NOT: [forbidden action]
 
-### AI-Slop Warnings
-
+**AI-Slop Warnings:**
 - [Pattern]: [Prevention measure]
 
 **No gaps found** ← If all clear

@@ -123,10 +123,11 @@ Quick scan before generating — cut scope inflation, premature abstraction, ove
 >
 > **MANDATORY. NON-NEGOTIABLE. No exceptions.** Do NOT skip this step, jump to plan generation, or reason that "the interview was thorough enough." Self-assessed thoroughness is unreliable.
 >
-> **GATE**: Step 7 is BLOCKED until ALL three conditions pass:
+> **GATE**: Step 7 is BLOCKED until ALL four conditions pass:
 > 1. ✅ `.amag/reviews/{planId}-consultant-response.md` exists (verified via `run_command`)
 > 2. ✅ Response contains a `verdict:` line (verified via `grep_search`)
 > 3. ✅ All CRITICAL gaps resolved
+> 4. ✅ `.amag/reviews/{planId}-consultant-cli-attempts.log` exists (CLI was attempted)
 >
 > **If ANY condition fails → you CANNOT proceed. Period.**
 
@@ -137,7 +138,7 @@ Load `plan-consultant` skill **NOW**. Read its SKILL.md and follow every step. T
 After the skill completes, verify:
 
 ```
-run_command: test -f .amag/reviews/{planId}-consultant-request.md && test -f .amag/reviews/{planId}-consultant-response.md && echo "GATE PASS" || echo "GATE FAIL"
+run_command: test -f .amag/reviews/{planId}-consultant-request.md && test -f .amag/reviews/{planId}-consultant-response.md && test -f .amag/reviews/{planId}-consultant-cli-attempts.log && echo "GATE PASS" || echo "GATE FAIL"
 grep_search("verdict:", ".amag/reviews/{planId}-consultant-response.md")
 ```
 

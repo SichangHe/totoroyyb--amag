@@ -27,6 +27,7 @@ The calling skill MUST provide these parameters:
 | `responseFileRaw` | `.amag/reviews/{id}-consultant-response-raw.md` | Where raw CLI output goes |
 | `responseFile` | `.amag/reviews/{id}-consultant-response.md` | Where cleaned/parsed response goes |
 | `requiredField` | `verdict:` | A string that must appear in a valid response |
+| `attemptLog` | `.amag/reviews/{id}-consultant-cli-attempts.log` | Audit trail — every CLI detection/invocation writes here |
 | `fallbackAction` | "Proceed to Self-Review Path (Step 2B)" | What the caller does on total failure |
 
 ---
@@ -39,6 +40,10 @@ The calling skill MUST provide these parameters:
    run_command: which <cli_name>
    ```
 3. If exit 0 → **CLI Path** (Step 2). If exit non-zero or `cli` is null → **report failure to caller**.
+4. **Write attempt log entry** (MANDATORY on every outcome):
+    ```
+    run_command: echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] attempt=detect cli={cli_name} result={found|not_found|null} exit={code}" >> {attemptLog}
+    ```
 
 Update `task_boundary`: `TaskStatus: "External CLI: detecting backend for {configPath}..."`
 
@@ -145,6 +150,8 @@ Check **both** of these:
 attempt = 1
 while attempt <= 3:
     run CLI command (Step 2)
+    # Log every attempt to the audit trail:
+    run_command: echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] attempt={attempt}/3 cli={cli_name} result={success|error} exit={code}" >> {attemptLog}
     if exit code == 0 AND no error patterns in raw response:
         → proceed to Step 4 (Parse Response)
     else:
@@ -190,6 +197,7 @@ Load `external-cli-runner` skill. Invoke with:
 - responseFileRaw: `.amag/reviews/{planId}-consultant-response-raw.md`
 - responseFile: `.amag/reviews/{planId}-consultant-response.md`
 - requiredField: `verdict:`
+- attemptLog: `.amag/reviews/{planId}-consultant-cli-attempts.log`
 - fallbackAction: "Proceed to Self-Review Path (Step 2B)"
 
 If the runner returns success → read responseFile and proceed.
