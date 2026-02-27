@@ -83,6 +83,7 @@ Before following existing patterns, assess whether they're worth following:
 1. Check config files (linter, formatter, type config)
 2. Sample 2-3 similar files for consistency
 3. Note project age signals (dependencies, patterns)
+4. You MUST look for and follow `AGENTS.md`s in PWD
 
 Classify the codebase:
 
