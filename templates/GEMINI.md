@@ -334,6 +334,9 @@ Brief context of what this plan achieves.
 - If exists with unchecked items → ask user: "Found incomplete plan X (3/7 done). Archive and start new, or resume?"
 - Archived plans go to `.amag/archive/{plan-name}-{timestamp}.md`
 
+**Completion cleanup:**
+- When ALL tasks are complete, remove .amag/active-plan.md`
+
 ### Dual-Write Progress Protocol
 
 When completing a task in a plan:
